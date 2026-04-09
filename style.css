@@ -1,0 +1,161 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+}
+
+header {
+  background-image: url("./ig/a1.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 100%;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.background img {
+  width: 100%;
+}
+
+.navbar .logo img {
+  max-height: 45px;
+  transition: 0.3s;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px 6px 10px;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+nav {
+  display: flex;
+}
+
+.menu .nav-link {
+  display: flex;
+  gap: 35px;
+  padding-left: 30px;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu ul li {
+  list-style-type: none;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+  color: #fff;
+  font-size: 15px;
+  text-align: center;
+  padding-top: 10px;
+  text-align: left; /* LUÔN CĂN TRÁI CHỮ */
+  white-space: nowrap; /* Không cho chữ nhảy xuống dòng */
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  width: 300px;
+  background-color: rgba(255, 255, 255, 0.201); /* Nền trắng trong suốt */
+  backdrop-filter: blur(10px); /* Hiệu ứng kính mờ (glassmorphism) */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Viền mỏng để rõ khối */
+  border-radius: 15px; /* Bo góc tròn trịa */
+  padding: 8px 15px; /* Khoảng cách bên trong */
+  transition: 0.3s;
+  height: 40px;
+}
+
+.search-container input {
+  flex: 1; /* Cho phép input chiếm toàn bộ không gian còn lại */
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+  outline: none; /* Loại bỏ viền khi focus */
+}
+
+.search::placeholder {
+  color: rgba(255, 255, 255, 0.7); /* Placeholder màu trắng mờ */
+}
+
+.search-icon img {
+  display: flex;
+  width: 30px;
+  backdrop-filter: blur(10px);
+  margin-left: 10px;
+  opacity: 0.3; /* Mặc định mờ hơn */
+  transition: opacity 0.3s; /* Hiệu ứng chuyển đổi mượt mà */
+  cursor: pointer;
+  border-radius: 30%;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon:hover {
+  opacity: 1;
+}
+
+.nav-link li {
+  position: relative; /* Để menu con có thể định vị tuyệt đối bên trong */
+  padding: 10px 0;
+}
+
+.menu1 {
+  position: absolute;
+  top: 100%; /* Đặt menu con ngay dưới menu cha */
+  left: 0;
+  display: none; /* Ẩn menu con mặc định */
+  width: 195px;
+  /* Căn đều khoảng cách giữa các cột và hàng */
+  gap: 15px 30px;
+  /* Tạo bảng có 2 cột bằng nhau */
+  grid-template-columns: repeat(2, 1fr);
+  background-color: rgba(255, 255, 255, 0.201); /* Nền trắng trong suốt */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Viền mỏng để rõ khối */
+  border-radius: 15px; /* Bo góc tròn trịa */
+  backdrop-filter: blur(10px);
+  padding-left: 10px;
+}
+
+.nav-link li:hover .menu1 {
+  display: grid; /* Dùng grid thay vì flex để chia cột chuẩn nhất */
+}
+
+.action-btn {
+  background-color: rgba(255, 255, 255, 0.201); /* Nền trắng trong suốt */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Viền mỏng để rõ khối */
+  border-radius: 15px; /* Bo góc tròn trịa */
+  backdrop-filter: blur(10px);
+  color: #fff;
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-left: 30px;
+}
+
+.action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.366); /* Nền sáng hơn khi hover */
+  box-shadow: 5px 5px 5px rgba(255, 255, 255, 0.2); /* Hiệu ứng bóng khi hover */
+}
+
+.menu1 ul li:hover {
+  color: rgba(255, 255, 255, 0.652);
+  /* transform: translateX(5px); Hiệu ứng nhích sang phải nhẹ khi hover */
+  box-shadow: 5px 5px 5px rgba(255, 255, 255, 0.2); /* Hiệu ứng bóng khi hover */
+}
