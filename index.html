@@ -142,6 +142,60 @@
           </nav>
         </div>
       </div>
+      <div class="hero-container">
+          <div class="hero-content">
+            <h1 class="movie-title">Can This Love Be Translated ?</h1>
+            <h3 class="movie-sub">Rổ Phim</h3>
+
+            <div class="movie-info">
+              <span class="badge rating">⭐9.9</span>
+              <span class="badge years">2026</span>
+              <span class="badge quality">4K</span>
+              <span class="badge episode">Full</span>
+            </div>
+            <div class="movie-type">
+              <span class="type">Tình Cảm</span>
+              <span class="type">Ngôn Tình</span>
+              <span class="type">Chill</span>
+            </div>
+            <p class="movie-desc">Đi khắp thế giới để quay chương trình truyền hình, cảm xúc của một người nổi tiếng và phiên dịch viên của cô lại chẳng thể nào thông dịch.</p>
+            <div class="play-btn">
+              <span class="play-icon">&#9658;</span> </div>
+            </div>
+          </div>
+          <div class="hero-thumbnails">
+            <div class="thumb-item active">
+              <img src="./ig/a1.jpg" alt="phim 1">
+            </div>
+            <div class="thumb-item">
+              <img src="./ig/a2.jpg" alt="phim 2">
+            </div>
+            <div class="thumb-item">
+              <img src="./ig/a3.jpg" alt="phim 3">
+            </div>
+            <div class="thumb-item">
+              <img src="./ig/a4.jpg" alt="phim 4">
+            </div>
+            <div class="thumb-item">
+              <img src="./ig/a5.jpg" alt="phim 5">
+            </div>
+          </div>
+        </div>
     </header>
+    <script>
+      // 1. Lấy tất cả các thẻ ảnh nhỏ
+const thumbs = document.querySelectorAll('.thumb-item');
+
+// 2. Lặp qua từng thẻ và lắng nghe sự kiện Click
+thumbs.forEach(item => {
+    item.addEventListener('click', function() {
+        // 3. Xóa class 'active' của cái đang có đi
+        document.querySelector('.thumb-item.active').classList.remove('active');
+        
+        // 4. Thêm class 'active' vào cái vừa được nhấn
+        this.classList.add('active');
+    });
+});
+    </script>
   </body>
 </html>

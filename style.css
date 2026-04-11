@@ -9,10 +9,20 @@ body {
 }
 
 header {
-  background-image: url("./ig/a1.jpg");
   background-size: cover;
   background-position: center;
   height: 100%;
+  background-image:
+    linear-gradient(
+      to right,
+      /* Chuyển màu từ trái sang phải */ rgba(0, 0, 0, 0.9) 10%,
+      /* Màu đen đặc (0.9 độ mờ) ở 10% bên trái (vùng có chữ) */
+      rgba(0, 0, 0, 0.5) 40%,
+      /* Màu đen mờ hơn (0.5 độ mờ) ở 40% (khu vực chuyển tiếp) */
+      rgba(0, 0, 0, 0) 100%
+        /* Hoàn toàn trong suốt ở 100% bên phải (vùng có ảnh nhân vật) */
+    ),
+    url("./ig/a1.jpg");
 }
 
 nav {
@@ -41,10 +51,6 @@ nav {
   display: flex;
   align-items: center;
   gap: 30px;
-}
-
-nav {
-  display: flex;
 }
 
 .menu .nav-link {
@@ -127,9 +133,17 @@ nav {
   grid-template-columns: repeat(2, 1fr);
   background-color: rgba(255, 255, 255, 0.201); /* Nền trắng trong suốt */
   border: 1px solid rgba(255, 255, 255, 0.2); /* Viền mỏng để rõ khối */
-  border-radius: 15px; /* Bo góc tròn trịa */
+  border-radius: 12px; /* Bo góc tròn trịa */
   backdrop-filter: blur(10px);
   padding-left: 10px;
+}
+
+.menu1 .option1 li {
+  border-radius: 12px;
+}
+
+.menu1 .option2 li {
+  border-radius: 12px;
 }
 
 .nav-link li:hover .menu1 {
@@ -158,4 +172,157 @@ nav {
   color: rgba(255, 255, 255, 0.652);
   /* transform: translateX(5px); Hiệu ứng nhích sang phải nhẹ khi hover */
   box-shadow: 5px 5px 5px rgba(255, 255, 255, 0.2); /* Hiệu ứng bóng khi hover */
+}
+
+.hero-container {
+  height: calc(100%);
+  max-width: 90%;
+  width: 500px;
+  padding: 0.5%;
+  /* Thay vì dùng margin-top cố định, ta dùng flex để căn giữa */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 30px;
+}
+
+.hero-content {
+  min-width: 600px;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+}
+
+.movie-title {
+  font-size: 25px;
+  margin-bottom: 5px;
+}
+
+.movie-sub {
+  color: rgb(243, 198, 19);
+  margin-bottom: 5px;
+}
+
+.movie-info {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.movie-info .badge {
+  background-color: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(5px);
+
+  /* Viền mỏng để tạo khối rõ ràng */
+  border: 1px solid rgba(255, 255, 255, 0.081);
+
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px; /* Bo góc vừa phải như mẫu */
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+  display: flex;
+  align-items: center;
+  transition: 0.3s;
+  box-shadow: 1px 1px 1px 1px rgba(128, 128, 128, 0.404);
+}
+
+.badge:hover {
+  cursor: pointer;
+  box-shadow: 2px 2px 2px 2px rgba(128, 128, 128, 0.404);
+}
+.badge.quality {
+  background: rgba(253, 8, 8, 0.903);
+}
+
+.badge.episode {
+  background: rgba(239, 176, 3, 0.985);
+}
+
+.movie-type {
+  margin-bottom: 8px;
+  transform: translateY(-2px);
+}
+
+.movie-type .type {
+  padding: 4px 7px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.234);
+  margin: 2px;
+}
+
+.movie-desc {
+  max-width: 550px;
+  margin-top: 10px;
+  font-family: "Inter", sans-serif;
+  font-size: 14px; /* Kích thước chữ nhỏ vừa phải */
+  color: #cccccc; /* Màu xám nhạt (không phải trắng tinh) để dịu mắt */
+  line-height: 1.6; /* Khoảng cách giữa các dòng giúp đoạn văn thoáng hơn */
+
+  /* Hiệu ứng giới hạn số dòng và hiện dấu 3 chấm (nếu text quá dài) */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Chỉ cho hiện tối đa 2 dòng */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* Thêm một chút bóng đổ nhẹ cho chữ để nổi trên nền ảnh */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.movie-desc:hover {
+  -webkit-line-clamp: unset; /* Bỏ giới hạn số dòng khi hover */
+  cursor: pointer;
+}
+
+.play-btn {
+  margin-top: 30px;
+  width: 45px;
+  height: 45px;
+  background: rgba(239, 176, 3, 0.892);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.4); /* Tạo quầng sáng nhẹ quanh nút */
+}
+
+.play-icon:hover {
+  cursor: pointer;
+  box-shadow: 0 0 30px rgba(255, 193, 7, 0.744);
+}
+
+.hero-thumbnails {
+  position: absolute;
+  bottom: 150px;
+  right: 5%;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.thumb-item {
+  width: 75px;
+  height: 50px;
+  border-radius: 7px;
+  overflow: hidden; /* Để ảnh con không tràn ra ngoài khi bo góc */
+  cursor: pointer;
+  border: 2px solid transparent; /* Mặc định viền trong suốt */
+  transition: all 0.3s ease;
+  opacity: 0.8; /* Mặc định hơi mờ để nổi bật ảnh đang chọn */
+  box-shadow: 1px 1px 1px 1px rgba(128, 128, 128, 0.404);
+}
+
+.thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Giúp ảnh không bị méo khi co giãn */
+}
+
+.thumb-item.active,
+.thumb-item:hover {
+  border: 2px solid #fff;
+  box-shadow: 2px 2px 2px 2px rgba(128, 128, 128, 0.404);
+  transform: scale(1.1); /* Phóng to nhẹ */
+  opacity: 1;
 }
