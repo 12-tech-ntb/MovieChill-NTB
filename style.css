@@ -187,7 +187,7 @@
     position: static !important;
     width: 100% !important; /* Trả về 100% */
     margin: 0 !important; /* Xóa bỏ margin-left âm */
-    padding: 0 15px 30px 15px !important; /* Lề trái - phải 15px đều nhau */
+    padding: 0 15px 40px 15px !important; /* Lề trái - phải 15px đều nhau */
     box-sizing: border-box !important;
   }
 
@@ -209,6 +209,7 @@
 
 body {
   height: 100vh;
+  background-color: #0d0d0d;
 }
 
 header {
@@ -224,6 +225,18 @@ header {
       /* Màu đen mờ hơn (0.5 độ mờ) ở 40% (khu vực chuyển tiếp) */
       rgba(0, 0, 0, 0) 100%
         /* Hoàn toàn trong suốt ở 100% bên phải (vùng có ảnh nhân vật) */
+    ),
+    url("./ig/a1.jpg");
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.4) 0%,
+      /* Tối nhẹ ở thanh navbar phía trên cùng */ rgba(0, 0, 0, 0) 25%,
+      /* Đoạn 25% là trong suốt hoàn toàn để rõ mặt diễn viên */
+      rgba(0, 0, 0, 0.6) 60%,
+      /* Bắt đầu tối dần xuống từ đoạn có các ảnh phim nhỏ */ #0d0d0d 85%,
+      /* Chuyển sang đen tuyền ở đoạn chứa các box thể loại */ #0d0d0d 100%
+        /* Phủ đen hoàn toàn phần đáy */
     ),
     url("./ig/a1.jpg");
 }
@@ -488,6 +501,7 @@ nav {
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translateX(2px);
   box-shadow: 0 0 15px rgba(255, 193, 7, 0.4); /* Tạo quầng sáng nhẹ quanh nút */
 }
 
