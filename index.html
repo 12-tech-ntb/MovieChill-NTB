@@ -98,6 +98,11 @@
               />
               <span class="search-icon"><img src="./ig/Screenshot 2026-04-09 231654.png" alt=""></span>
             </div>
+            <div class="hamburger" id="hamburger">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
             <div class="menu">
               <ul class="nav-link">
                 <li>
@@ -139,6 +144,7 @@
               <!-- Các nút hành động -->    
                 <button class="action-btn">Đăng Nhập</button>
             </div>
+           
           </nav>
         </div>
       </div>
@@ -180,22 +186,95 @@
               <img src="./ig/a5.jpg" alt="phim 5">
             </div>
           </div>
+          <div class="hero-movie-type">
+            <h2 class="hero-movie-title">Các thể loại phim hot</h2>
+            <div class="item">
+              <div class="box-movie box1">
+                <h3>Marvel</h3>
+                <p>Watch all<span>&rsaquo;</span></p>
+              </div>
+
+               
+              <div class="box-movie box2">
+                <h3>Sitcom</h3>
+                <p>Watch all<span>&rsaquo;</span></p>
+              </div>
+
+              
+              <div class="box-movie box3">
+                <h3>Sub</h3>
+                <p>Watch all<span>&rsaquo;</span></p>
+              </div>
+
+               
+              <div class="box-movie box4">
+                <h3>Xuyên Không</h3>
+                <p>Watch all<span>&rsaquo;</span></p>
+              </div>
+
+               
+              <div class="box-movie box5">
+                <h3>Cổ trang</h3>
+                <p>Watch all<span>&rsaquo;</span></p>
+              </div>
+
+              <div class="box-movie box6">
+                <h3>Chữa lành</h3>
+                <p>Watch all<span>&rsaquo;</span></p>
+              </div>
+              
+            </div>
+          </div>
         </div>
     </header>
     <script>
-      // 1. Lấy tất cả các thẻ ảnh nhỏ
-const thumbs = document.querySelectorAll('.thumb-item');
+  const thumbs = document.querySelectorAll('.thumb-item');
+  const hamburger = document.getElementById('hamburger');
+  const navLink = document.querySelector('.nav-link');
+  const parentMenuItems = document.querySelectorAll('.nav-link > li');
 
-// 2. Lặp qua từng thẻ và lắng nghe sự kiện Click
-thumbs.forEach(item => {
+  // 1. Xử lý ảnh nhỏ (Thumbnails)
+  thumbs.forEach(item => {
     item.addEventListener('click', function() {
-        // 3. Xóa class 'active' của cái đang có đi
-        document.querySelector('.thumb-item.active').classList.remove('active');
-        
-        // 4. Thêm class 'active' vào cái vừa được nhấn
-        this.classList.add('active');
+      const active = document.querySelector('.thumb-item.active');
+      if (active) active.classList.remove('active');
+      this.classList.add('active');
     });
-});
-    </script>
+  });
+
+  // 2. Xử lý Nút 3 gạch
+  hamburger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    navLink.classList.toggle('active');
+    hamburger.classList.toggle('toggle');
+  });
+
+  // 3. Xử lý Menu chính & Menu con
+  parentMenuItems.forEach(li => {
+    li.addEventListener('click', (e) => {
+      const subMenu = li.querySelector('.menu1');
+
+      if (subMenu) {
+        // Nếu là mục có menu con (Thể loại, Quốc gia)
+        e.stopPropagation();
+        subMenu.classList.toggle('show-submenu');
+      } else {
+        // Nếu là mục đơn (Phim mới, Phim lẻ...) -> Click xong đóng Sidebar
+        navLink.classList.remove('active');
+        hamburger.classList.remove('toggle');
+      }
+    });
+  });
+
+  // 4. Click ra ngoài để đóng Menu
+  document.addEventListener('click', (e) => {
+    if (!navLink.contains(e.target) && !hamburger.contains(e.target)) {
+      navLink.classList.remove('active');
+      hamburger.classList.remove('toggle');
+      // Ẩn luôn các menu con đang mở
+      document.querySelectorAll('.menu1').forEach(m => m.classList.remove('show-submenu'));
+    }
+  });
+  </script>
   </body>
 </html>

@@ -4,6 +4,209 @@
   box-sizing: border-box;
 }
 
+/* --- CSS CHO PC (Mặc định) --- */
+.hamburger {
+  display: none; /* Ẩn trên máy tính */
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  z-index: 1100;
+  padding: 5px;
+}
+
+.line {
+  width: 25px;
+  height: 3px;
+  background-color: #fff;
+  transition: 0.4s;
+  border-radius: 2px;
+}
+
+/* --- BẢN FIX CUỐI CÙNG CHO MOBILE --- */
+@media screen and (max-width: 768px) {
+  /* 1. RESET CHỐNG TRÀN BẰNG VIEWPORT */
+  html,
+  body {
+    overflow-x: hidden !important;
+    width: 100vw !important; /* Khóa cứng chiều rộng bằng màn hình */
+  }
+
+  * {
+    box-sizing: border-box !important;
+  }
+
+  header {
+    height: auto !important;
+    min-height: 100vh !important;
+    padding-bottom: 30px;
+    background-attachment: fixed !important;
+  }
+
+  /* 2. NAVBAR: ÉP LOGO - SEARCH - 3 GẠCH TRÊN 1 HÀNG */
+  .navbar {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 10px 15px !important;
+    width: 100% !important;
+  }
+
+  .logo {
+    padding: 0 !important;
+    flex-shrink: 0 !important; /* Không cho phép bóp méo logo */
+  }
+  .logo img {
+    max-height: 35px !important;
+  }
+
+  /* Ép thẻ div bọc <nav> phải chiếm trọn phần trống còn lại */
+  .navbar > div:nth-child(2) {
+    flex-grow: 1 !important;
+    width: calc(100% - 60px) !important;
+  }
+
+  nav {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 0 !important;
+    gap: 10px !important;
+  }
+
+  .search-container {
+    flex-grow: 1 !important; /* Thanh search tự động co giãn */
+    width: auto !important;
+    height: 35px !important;
+    margin: 0 !important;
+    padding: 5px 10px !important;
+  }
+
+  .search-container input {
+    width: 100% !important;
+  }
+
+  .hamburger {
+    display: flex !important;
+    flex-shrink: 0 !important; /* BẢO VỆ NÚT 3 GẠCH: cấm bị đẩy văng ra ngoài */
+    z-index: 2200 !important;
+  }
+
+  /* Cố định nút 3 gạch khi mở menu */
+  .hamburger.toggle {
+    position: fixed !important;
+    top: 15px !important;
+    right: 15px !important;
+  }
+
+  .actions {
+    display: none !important;
+  }
+
+  /* 3. MENU SIDEBAR */
+  .menu .nav-link {
+    display: flex !important;
+    position: fixed !important;
+    top: 0;
+    right: -100%;
+    width: 250px !important;
+    height: 100vh;
+    background: rgba(15, 15, 15, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    padding: 70px 20px 20px 20px !important;
+    gap: 10px !important;
+    transition: 0.3s;
+    z-index: 2000;
+    overflow-y: auto;
+  }
+
+  .menu .nav-link.active {
+    right: 0 !important;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.7);
+  }
+
+  /* 4. MENU CON */
+  .menu1 {
+    display: none !important;
+    position: static !important;
+    width: 100% !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    margin-top: 5px !important;
+    padding: 10px !important;
+  }
+  .menu1.show-submenu {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  /* 5. NỘI DUNG HERO */
+  .hero-container {
+    width: 100% !important;
+    padding: 15px !important;
+  }
+  .hero-content {
+    min-width: unset !important;
+    width: 100% !important;
+  }
+
+  /* 6. THUMBNAILS (CĂN ĐỀU 2 BÊN, KHÔNG BÁM LỀ) */
+  .hero-thumbnails {
+    position: static !important;
+    width: 100% !important; /* Trả về 100% thay vì 100vw */
+    margin: 20px 0 !important; /* Xóa bỏ margin-left âm */
+    padding: 0 15px !important; /* Thêm lề trái & phải 15px đều đặn */
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    gap: 12px !important; /* Giãn cách các ảnh nhỏ cho thoáng */
+    justify-content: flex-start !important;
+  }
+
+  .hero-thumbnails::-webkit-scrollbar {
+    display: none;
+  }
+
+  .thumb-item {
+    flex: 0 0 auto !important;
+    width: 80px !important; /* Chỉnh to lên một xíu cho dễ bấm */
+    height: 55px !important;
+    scroll-snap-align: start;
+  }
+
+  /* 7. CATEGORIES (CHIA 2 CỘT CĂN GIỮA ĐẸP MẮT) */
+  .hero-movie-type {
+    position: static !important;
+    width: 100% !important; /* Trả về 100% */
+    margin: 0 !important; /* Xóa bỏ margin-left âm */
+    padding: 0 15px 30px 15px !important; /* Lề trái - phải 15px đều nhau */
+    box-sizing: border-box !important;
+  }
+
+  .item {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Cân bằng đúng 2 cột */
+    gap: 15px !important; /* Khoảng cách giữa 2 hộp màu */
+    width: 100% !important;
+  }
+
+  .box-movie {
+    width: 100% !important;
+    min-height: 90px !important;
+    margin: 0 !important;
+    padding: 15px !important;
+    box-sizing: border-box !important;
+  }
+}
+
 body {
   height: 100vh;
 }
@@ -71,6 +274,7 @@ nav {
   padding-top: 10px;
   text-align: left; /* LUÔN CĂN TRÁI CHỮ */
   white-space: nowrap; /* Không cho chữ nhảy xuống dòng */
+  cursor: pointer;
 }
 
 .search-container {
@@ -294,7 +498,7 @@ nav {
 
 .hero-thumbnails {
   position: absolute;
-  bottom: 150px;
+  bottom: 200px;
   right: 5%;
   display: flex;
   gap: 10px;
@@ -325,4 +529,90 @@ nav {
   box-shadow: 2px 2px 2px 2px rgba(128, 128, 128, 0.404);
   transform: scale(1.1); /* Phóng to nhẹ */
   opacity: 1;
+}
+
+.hero-movie-type {
+  padding: 30px;
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  width: 70%;
+  /* Tạo lớp phủ mờ nhẹ phía sau khối danh mục */
+  /* background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent); */
+}
+
+.hero-movie-title {
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+}
+
+.item {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+  /* overflow-x: auto; Cho phép vuốt ngang nếu quá nhiều chủ đề */
+  padding-bottom: 10px;
+  padding-top: 5px;
+}
+
+.box-movie {
+  height: 110px;
+  width: 160px;
+  background: #2e5bec;
+  border-radius: 10px 30px 10px 30px;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  cursor: pointer;
+  transition: 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 15px 20px;
+}
+.box-movie:hover {
+  transform: translateY(-6px);
+  filter: brightness(1.1);
+  box-shadow: 2px 2px 2px 2px gray;
+}
+.box-movie h3 {
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.box-movie p {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+}
+
+.box-movie p span {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.box1 {
+  background-color: #2e5bec;
+}
+.box2 {
+  background-color: #167d5f;
+}
+.box3 {
+  background-color: #7b5fc7;
+}
+.box4 {
+  background-color: #d17e5a;
+}
+.box5 {
+  background-color: #a83434;
+}
+.box6 {
+  background-color: #e65c8d;
 }
