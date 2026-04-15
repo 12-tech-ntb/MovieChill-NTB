@@ -209,7 +209,8 @@
 
 body {
   height: 100vh;
-  background-color: #0d0d0d;
+  background-color: #242424;
+  font-family: "Inter", sans-serif;
 }
 
 header {
@@ -234,8 +235,8 @@ header {
       /* Tối nhẹ ở thanh navbar phía trên cùng */ rgba(0, 0, 0, 0) 25%,
       /* Đoạn 25% là trong suốt hoàn toàn để rõ mặt diễn viên */
       rgba(0, 0, 0, 0.6) 60%,
-      /* Bắt đầu tối dần xuống từ đoạn có các ảnh phim nhỏ */ #0d0d0d 85%,
-      /* Chuyển sang đen tuyền ở đoạn chứa các box thể loại */ #0d0d0d 100%
+      /* Bắt đầu tối dần xuống từ đoạn có các ảnh phim nhỏ */ #242424 85%,
+      /* Chuyển sang đen tuyền ở đoạn chứa các box thể loại */ #242424 100%
         /* Phủ đen hoàn toàn phần đáy */
     ),
     url("./ig/a1.jpg");
@@ -629,4 +630,272 @@ nav {
 }
 .box6 {
   background-color: #e65c8d;
+}
+
+/* -----------------Main-------------------------- */
+.domain-link {
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  padding: 5px 30px 30px 30px;
+  width: 95%;
+  height: 50px;
+  border: 1px solid gray;
+  margin: 0px 30px 0px 30px;
+  border-radius: 7px;
+  background-color: rgba(255, 255, 255, 0.234);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.domain-link span {
+  padding-top: 20px;
+}
+
+.domain-link .text-ig {
+  text-decoration: none;
+  padding-left: 8px;
+  /* Dải màu chuẩn của logo Instagram */
+  background: linear-gradient(
+    45deg,
+    #f09433 0%,
+    #e6683c 25%,
+    #dc2743 50%,
+    #cc2366 75%,
+    #bc1888 100%
+  );
+
+  /* Cắt nền theo chữ và làm chữ trong suốt */
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  /* Căn chỉnh thêm cho đẹp */
+  font-weight: 700; /* In đậm lên nhìn màu gradient sẽ rõ và đẹp hơn */
+}
+
+.text-ig:hover {
+  filter: brightness(2);
+}
+
+.domain-link i {
+  padding: 0 0 0 8px;
+}
+
+/* ==============Main====================== */
+.block-main {
+  width: 100%;
+  height: 500px;
+  margin: 20px;
+  padding: 20px;
+}
+
+.block-item1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.block-item1 a {
+  text-decoration: none;
+  color: #fff;
+  display: flex;
+  gap: 6px;
+  transition: 0.2s;
+  margin-right: 55px;
+}
+
+.view-all:hover {
+  transform: scale(1.1);
+}
+
+.movie-list {
+  display: flex;
+  gap: 15px;
+  color: #fff;
+}
+
+.movie-card {
+  position: relative;
+  width: 300px;
+  height: 200px;
+  z-index: 1;
+}
+
+.card-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.movie-card:hover {
+  z-index: 10;
+}
+
+.movie-card:hover .card-wrapper {
+  transform: scale(1.15) translateY(-5%); /* Phóng to và hơi đẩy lên trên */
+  background-color: #242424; /* Hiện nền xám đậm khi phóng to */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
+}
+
+.item-info {
+  position: relative;
+  width: 100%;
+  height: 180px;
+}
+
+.item-info img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-info .episode {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #a37255;
+  padding: 5px;
+  border-radius: 3px;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.movie-card:hover .episode {
+  display: none;
+}
+
+.card-info {
+  padding: 10px 20px;
+  flex-direction: column;
+  display: flex;
+  gap: 3px;
+  background-color: #3f3d3d; /* Hiện nền xám đậm khi phóng to */
+}
+
+.title-vn {
+  font-size: 15px;
+}
+
+.title-en {
+  font-size: 8px;
+}
+.hover {
+  display: none;
+  padding: 2px;
+}
+
+.movie-card:hover .hover {
+  display: block;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  height: 30px;
+  margin-bottom: 8px;
+  padding-left: 0;
+  margin-left: 0px;
+  margin-top: 5px;
+}
+
+.btn.btn-play {
+  background: rgba(239, 176, 3, 0.892);
+  padding: 0 3px 0 5px;
+  width: 100px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: #fff;
+  font-weight: bold;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Thêm dòng này để lúc sáng lên nó mượt mà, không bị giật cục */
+}
+
+.btn.btn-play:hover {
+  filter: brightness(1.15); /* Tăng độ sáng lên 15% */
+  box-shadow: 1px 1px 1px 1px rgba(239, 239, 3, 0.041);
+  transform: translateY(-3px); /* Kéo nút trồi lên trên 3px */
+}
+
+.btn-icon {
+  background-color: rgba(255, 255, 255, 0.201); /* Nền trắng trong suốt */
+  backdrop-filter: blur(10px);
+  padding: 0 8px 0 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: #fff;
+  font-weight: bold;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s ease; /* Bắt buộc phải có để hiệu ứng mượt mà */
+  box-shadow: 1px 1px 1px 1px rgba(190, 190, 190, 0.678);
+}
+
+.btn-icon:hover {
+  transform: translateY(-3px); /* Kéo nút trồi lên trên 3px */
+}
+
+.data-card {
+  margin-bottom: 1px;
+  margin-top: 2px;
+  display: flex;
+  gap: 10px;
+  height: 30px;
+}
+
+.tag {
+  border: 1px solid #ffffff8b;
+  border-radius: 6px;
+  padding: 5px;
+  box-shadow: 1px 1px 1px 1px rgba(190, 190, 190, 0.678);
+  font-weight: 700;
+}
+
+.tag.solid {
+  background-color: rgba(119, 117, 117, 0.421);
+}
+
+.tag.solid-brown {
+  background: linear-gradient(
+    to right,
+    #f09433 0%,
+    #e6683c 25%,
+    #dc2743 50%,
+    #cc2366 75%,
+    #bc1888 100%
+  );
+}
+
+.Manufacturer {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.Manufacturer span {
 }
