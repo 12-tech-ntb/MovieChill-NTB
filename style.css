@@ -205,6 +205,96 @@
     padding: 15px !important;
     box-sizing: border-box !important;
   }
+
+  /* 8. LIST PHIM BẢN MOBILE (Cuộn ngang) */
+  .block-main {
+    padding: 10px 0 10px 15px !important; /* Trái 15px, phải 0 để cuộn vuốt sát mép màn hình */
+    margin: 5px 0 !important;
+    min-height: auto !important;
+  }
+
+  .block-item1 {
+    padding-right: 15px !important; /* Giữ lề phải cho tiêu đề */
+  }
+
+  .movie-list {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    gap: 10px !important;
+    padding-bottom: 120px !important; /* Không gian dư bên dưới để hiển thị Hover Card không bị cắt */
+    padding-right: 15px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .movie-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .movie-card {
+    flex: 0 0 auto !important;
+    width: 220px !important;
+    height: 140px !important;
+    scroll-snap-align: start;
+  }
+
+  .item-info {
+    height: 140px !important;
+  }
+
+  /* Ép kích thước chữ nhỏ lại trên card mobile */
+  .title-vn {
+    font-size: 13px !important;
+  }
+  .title-en {
+    font-size: 10px !important;
+  }
+  
+  .action-buttons {
+    flex-wrap: wrap !important;
+    height: auto !important;
+    gap: 4px !important;
+  }
+  .btn {
+    font-size: 10px !important;
+    padding: 3px 5px !important;
+  }
+  .data-card {
+    height: auto !important;
+  }
+  .tag {
+    font-size: 10px !important;
+    padding: 3px !important;
+  }
+
+  /* 9. FOOTER MOBILE (Xếp dọc) */
+  .footer {
+    padding: 40px 15px 20px 15px !important;
+  }
+
+  .footer-container {
+    flex-direction: column !important;
+    padding: 0 !important;
+    gap: 5px !important;
+  }
+
+  .footer-col {
+    width: 100% !important;
+    margin-bottom: 25px !important;
+  }
+
+  .brand-col {
+    text-align: center !important;
+  }
+
+  .social-icons {
+    justify-content: center !important;
+  }
+
+  .footer-bottom {
+    margin-top: 10px !important;
+  }
 }
 
 body {
@@ -687,9 +777,11 @@ nav {
 /* ==============Main====================== */
 .block-main {
   width: 100%;
-  height: 500px;
-  margin: 20px;
-  padding: 20px;
+  height: auto;
+  min-height: 330px;
+  margin: 5px 0;
+  padding: 10px 40px;
+  box-sizing: border-box;
 }
 
 .block-item1 {
@@ -719,12 +811,30 @@ nav {
   display: flex;
   gap: 15px;
   color: #fff;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 160px; /* Tăng thêm để thẻ không bị cắt phần dưới khi scale */
+  margin-bottom: -130px;  /* Kéo khối dưới lên để bù lại padding */
+  padding-top: 30px; /* Tránh cắt phần trên khi scale */
+  margin-top: -15px;
+  padding-left: 40px; /* Không gian bên trái để thẻ đầu tiên không bị cắt khi phóng to */
+  margin-left: -40px; /* Kéo khung ra lề màn hình để bù trừ padding */
+  padding-right: 40px; /* Tương tự cho thẻ cuối cùng bên phải */
+  margin-right: -40px;
+  /* Hide scrollbar for smooth drag-to-scroll experience */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.movie-list::-webkit-scrollbar {
+  display: none;
 }
 
 .movie-card {
   position: relative;
-  width: 300px;
-  height: 200px;
+  width: 320px; /* Tỉ lệ chuẩn 16:9 (320x180) để ảnh không bị crop */
+  height: 270px; 
+  flex-shrink: 0; /* Prevent shrinking when there are many items */
   z-index: 1;
 }
 
@@ -757,13 +867,14 @@ nav {
 .item-info {
   position: relative;
   width: 100%;
-  height: 180px;
+  height: 180px; /* 320x180 chuẩn tỷ lệ 16:9 */
 }
 
 .item-info img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center; /* Trả về center để không bị lệch khung hình */
 }
 
 .item-info .episode {
@@ -913,4 +1024,229 @@ nav {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+img.logo.VTV {
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 4px 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  object-fit: contain;
+}
+
+/* ============== Footer ============== */
+.footer {
+  background-color: #141414; /* Đổi sang màu đen đậm phù hợp nền web */
+  color: #fff;
+  padding: 60px 0 20px 0;
+  font-family: Arial, sans-serif;
+  margin-top: 40px;
+  border-top: 1px solid #333;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  gap: 20px;
+}
+
+.footer-col {
+  flex: 1;
+  min-width: 220px;
+  margin-bottom: 20px;
+}
+
+.brand-col {
+  flex: 1.5; /* Rộng hơn 1 chút cho phần mô tả */
+}
+
+.footer-logo {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+}
+
+.footer-logo span {
+  color: #efb003; /* Màu vàng cam đồng bộ web */
+}
+
+.footer-col p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: #b3b3b3;
+}
+
+.social-icons {
+  display: flex;
+  gap: 15px;
+}
+
+.social-icons a {
+  color: #fff;
+  font-size: 18px;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.social-icons a:hover {
+  transform: translateY(-3px);
+  color: #efb003;
+}
+
+.footer-col h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.footer-col h3::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 2px;
+  background-color: #efb003; /* Đường gạch dưới màu vàng cam */
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-col ul li {
+  margin-bottom: 12px;
+}
+
+.footer-col ul li a {
+  text-decoration: none;
+  color: #b3b3b3;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.footer-col ul li a:hover {
+  color: #efb003;
+}
+
+.address-col p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #b3b3b3;
+}
+
+.address-col strong {
+  font-weight: 600;
+  color: #fff;
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 40px auto 0;
+  padding: 20px 20px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.footer-bottom p {
+  font-size: 13px;
+  color: #b3b3b3;
+}
+
+/* ============== Video Modal & API Styles ============== */
+.video-modal {
+  display: none; 
+  position: fixed; 
+  z-index: 9999; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  background-color: rgba(0,0,0,0.9); 
+  align-items: center;
+  justify-content: center;
+}
+
+.video-modal.show {
+  display: flex;
+}
+
+.video-modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 1000px;
+  background: #141414;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.video-close-btn {
+  color: #aaa;
+  position: absolute;
+  top: 5px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.video-close-btn:hover,
+.video-close-btn:focus {
+  color: #efb003;
+  text-decoration: none;
+}
+
+.iframe-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.iframe-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Grid for Search Results */
+#search-results-section {
+  background: #242424;
+}
+
+.grid-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+  gap: 20px !important;
+  overflow: visible !important;
+  padding-bottom: 0 !important;
+}
+
+.grid-list .movie-card {
+  width: 100% !important;
+  height: 200px !important;
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .grid-list {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .grid-list .movie-card {
+    height: 140px !important;
+  }
 }
