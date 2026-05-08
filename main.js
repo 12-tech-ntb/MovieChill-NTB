@@ -7,7 +7,7 @@
       rating: '⭐9.9', years: '2026', quality: '4K', episode: 'Full',
       types: ['Tình Cảm', 'Ngôn Tình', 'Chill'],
       desc: 'Đi khắp thế giới để quay chương trình truyền hình, cảm xúc của một người nổi tiếng và phiên dịch viên của cô lại chẳng thể nào thông dịch.',
-      slug: 'nguoi-doi' // Phim chưa ra mắt nên tạm dùng một link phim có trên OPhim để test
+      slug: 'tieng-yeu-nay-anh-dich-duoc-khong' // Link chuẩn từ API OPhim
     },
     {
       img: './ig/Homtown.jpg',
