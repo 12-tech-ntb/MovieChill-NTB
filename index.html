@@ -175,10 +175,10 @@
               <img src="./ig/a1.jpg" alt="phim 1">
             </div>
             <div class="thumb-item">
-              <img src="./ig/a2.jpg" alt="phim 2">
+              <img src="./ig/Homtown.jpg" alt="phim 2">
             </div>
             <div class="thumb-item">
-              <img src="./ig/a3.jpg" alt="phim 3">
+              <img src="./ig/Taxi3.jpg" alt="phim 3">
             </div>
             <div class="thumb-item">
               <img src="./ig/a4.jpg" alt="phim 4">
@@ -232,264 +232,91 @@
       <div class="domain-link">
         <span><p>Admin<i class="fa-brands fa-instagram"></i><a class="text-ig" target="_blank"  href="https://l.facebook.com/l.php?u=https%3A%2F%2Fwww.instagram.com%2Fbacnguyentat12206%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExOFVueFQzOU1tTk02azhnVHNydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR73-4ZFE5Ezhx4_oUEDisKXjRfTL6-5DIoAnZflloCOZHYdjYutKTk5PQxmPQ_aem_cuIfShMlRepcHi0ZOWDxWg&h=AT5xoqeSO7HkqgSLO6u8fKemftQQDSGbOirAsscYlSONxOyDtPxayc0vVNBuBicz5XK9xg4L5uwZkzzV799-p4-_DPc5Sei9ZdCUyLUSPZ75JBq-wBQzyZfCaCscIkhEWTEV9BAeP4MCl82DFdVo">Instagram</a></p></span>
       </div>
-      <div class="block-main">
-        <div class="block-item1">
-          <div class="item1-title"><h2>Phim Hàn Quốc</h2></div>
-          <a href="#!" class="view-all">Xem tất cả <span><i class="fa-solid fa-right-left"></i></span></a>
+      <!-- Search Results Section -->
+      <div id="search-results-section" style="display: none; padding: 20px 40px; min-height: 50vh;">
+        <h2 style="color: #fff; margin-bottom: 20px;">Kết Quả Tìm Kiếm: <span id="search-keyword" style="color: #efb003;"></span></h2>
+        <div class="movie-list grid-list" id="search-movie-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; overflow: visible; flex-wrap: wrap;">
+          <!-- Phim tìm kiếm sẽ được đổ vào đây -->
         </div>
-        <div class="movie-list">
-          <!-- Movie1 -->
-          <div class="movie-card">
-            <div class="card-wrapper">
+      </div>
 
-              <div class="item-info">
-                <img src="./ig/item1.jpg" alt="img movie">
-                <span class="episode">Full</span>
-              </div>
-
-              <div class="card-info">
-                <h3 class="title-vn">Tiếng yêu anh dịch được KO</h3>
-                <p class="titel-en">Can this love be translated </p>
-
-                <div class="hover">
-                  <div class="action-buttons">
-                    <button class="btn btn-play"><i class="fa-solid fa-play"></i>Xem Ngay</button>
-                    <button class="btn btn-icon"><i class="fa-regular fa-heart"></i>Like</button>
-                    <button class="btn btn-icon two"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
-                  </div>
-
-                  <div class="data-card">
-                    <span class="tag solid">Korea</span>
-                    <span class="tag outline">2026</span>
-                    <span class="tag solid-brown">Full</span>
-                  </div>
-
-                  <div class="Manufacturer">
-                    <span><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix Logo" class="logo" width="100"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <!-- Main Home Content -->
+      <div id="main-home-content">
+        <div class="block-main">
+          <div class="block-item1">
+            <div class="item1-title"><h2>Phim Mới Cập Nhật</h2></div>
+            <a href="#!" class="view-all">Xem tất cả <span><i class="fa-solid fa-right-left"></i></span></a>
           </div>
-          <!-- Movie2 -->
-            <div class="movie-card">
-            <div class="card-wrapper">
-
-              <div class="item-info">
-                <img src="./ig/a2.jpg" alt="img movie">
-                <span class="episode">Full</span>
-              </div>
-
-              <div class="card-info">
-                <h3 class="title-vn">Điệu cha cha cha làng biển</h3>
-                <p class="titel-en">Hometown cha cha cha</p>
-
-                <div class="hover">
-                  <div class="action-buttons">
-                    <button class="btn btn-play"><i class="fa-solid fa-play"></i>Xem Ngay</button>
-                    <button class="btn btn-icon"><i class="fa-regular fa-heart"></i>Like</button>
-                    <button class="btn btn-icon two"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
-                  </div>
-
-                  <div class="data-card">
-                    <span class="tag solid">Korea</span>
-                    <span class="tag outline">2021</span>
-                    <span class="tag solid-brown">Full</span>
-                  </div>
-
-                  <div class="Manufacturer">
-                    <span><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix Logo" class="logo" width="100"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="movie-list" id="api-movie-list-1">
+            <!-- Phim mới sẽ được đổ vào đây bằng JS -->
+            <p style="color: white;">Đang tải dữ liệu phim...</p>
           </div>
-          <!-- Movie3 -->
-            <div class="movie-card">
-            <div class="card-wrapper">
-
-              <div class="item-info">
-                <img src="./ig/a3.jpg" alt="img movie">
-                <span class="episode">Full</span>
-              </div>
-
-              <div class="card-info">
-                <h3 class="title-vn">Tài xế taxi 3 🚕</h3>
-                <p class="titel-en">Taxi driver 3 🚕</p>
-
-                <div class="hover">
-                  <div class="action-buttons">
-                    <button class="btn btn-play"><i class="fa-solid fa-play"></i>Xem Ngay</button>
-                    <button class="btn btn-icon"><i class="fa-regular fa-heart"></i>Like</button>
-                    <button class="btn btn-icon two"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
-                  </div>
-
-                  <div class="data-card">
-                    <span class="tag solid">Korea</span>
-                    <span class="tag outline">2025</span>
-                    <span class="tag solid-brown">Full</span>
-                  </div>
-
-                  <div class="Manufacturer">
-                    <span><img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" alt="Netflix Logo" class="logo" width="100"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
+        </div>
+        
+        <div class="block-main">
+          <div class="block-item1">
+            <div class="item1-title"><h2>Phim Bộ Nổi Bật</h2></div>
+            <a href="#!" class="view-all">Xem tất cả <span><i class="fa-solid fa-right-left"></i></span></a>
           </div>
-          <!-- Movie4 -->
-            <div class="movie-card">
-            <div class="card-wrapper">
-
-              <div class="item-info">
-                <img src="./ig/a4.jpg" alt="img movie">
-                <span class="episode">Full</span>
-              </div>
-
-              <div class="card-info">
-                <h3 class="title-vn">Mật danh K2</h3>
-                <p class="titel-en">The K2</p>
-
-                <div class="hover">
-                  <div class="action-buttons">
-                    <button class="btn btn-play"><i class="fa-solid fa-play"></i>Xem Ngay</button>
-                    <button class="btn btn-icon"><i class="fa-regular fa-heart"></i>Like</button>
-                    <button class="btn btn-icon two"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
-                  </div>
-
-                  <div class="data-card">
-                    <span class="tag solid">Korea</span>
-                    <span class="tag outline">2018</span>
-                    <span class="tag solid-brown">Full</span>
-                  </div>
-
-                  <div class="Manufacturer">
-                   <svg viewBox="0 0 180 30" width="120" xmlns="http://www.w3.org/2000/svg">
-        <text x="5" y="22" font-family="'Segoe UI', Tahoma, Arial, sans-serif" font-weight="900" font-size="18" fill="#ffffff" letter-spacing="1">STUDIO</text>
-        <text x="82" y="22" font-family="'Segoe UI', Tahoma, Arial, sans-serif" font-weight="900" font-size="18" fill="#E50914" letter-spacing="1">DRAGON</text>
-    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="movie-list" id="api-movie-list-2">
+            <!-- Phim bộ sẽ được đổ vào đây bằng JS -->
+            <p style="color: white;">Đang tải dữ liệu phim...</p>
           </div>
-          <!-- Movie5 -->
-            <div class="movie-card">
-            <div class="card-wrapper">
+        </div>
+      </div>
 
-              <div class="item-info">
-                <img src="./ig/a5.jpg" alt="img movie">
-                <span class="episode">Full</span>
-              </div>
-
-              <div class="card-info">
-                <h3 class="title-vn">Trò chơi thao túng</h3>
-                <p class="titel-en">The Manipulated</p>
-
-                <div class="hover">
-                  <div class="action-buttons">
-                    <button class="btn btn-play"><i class="fa-solid fa-play"></i>Xem Ngay</button>
-                    <button class="btn btn-icon"><i class="fa-regular fa-heart"></i>Like</button>
-                    <button class="btn btn-icon two"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
-                  </div>
-
-                  <div class="data-card">
-                    <span class="tag solid">Korea</span>
-                    <span class="tag outline">2025</span>
-                    <span class="tag solid-brown">Full</span>
-                  </div>
-
-                  <div class="Manufacturer">
-                    <span><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix Logo" class="logo" width="100"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Movie6 -->
-            <div class="movie-card">
-            <div class="card-wrapper">
-
-              <div class="item-info">
-                <img src="./ig/a6.jpg" alt="img movie">
-                <span class="episode">Full</span>
-              </div>
-
-              <div class="card-info">
-                <h3 class="title-vn">Giông tố</h3>
-                <p class="titel-en">Tempest</p>
-
-                <div class="hover">
-                  <div class="action-buttons">
-                    <button class="btn btn-play"><i class="fa-solid fa-play"></i>Xem Ngay</button>
-                    <button class="btn btn-icon"><i class="fa-regular fa-heart"></i>Like</button>
-                    <button class="btn btn-icon two"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
-                  </div>
-
-                  <div class="data-card">
-                    <span class="tag solid">Korea</span>
-                    <span class="tag outline">2025</span>
-                    <span class="tag solid-brown">Full</span>
-                  </div>
-
-                  <div class="Manufacturer">
-                    <span><img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" alt="Netflix Logo" class="logo" width="100"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <!-- Video Player Modal -->
+      <div id="video-modal" class="video-modal">
+        <div class="video-modal-content">
+          <span class="video-close-btn">&times;</span>
+          <h3 id="video-title" style="color: white; margin-bottom: 10px;">Đang tải...</h3>
+          <div class="iframe-container">
+            <iframe id="video-iframe" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
           </div>
         </div>
       </div>
     </main>
-    <script>
-  const thumbs = document.querySelectorAll('.thumb-item');
-  const hamburger = document.getElementById('hamburger');
-  const navLink = document.querySelector('.nav-link');
-  const parentMenuItems = document.querySelectorAll('.nav-link > li');
-
-  // 1. Xử lý ảnh nhỏ (Thumbnails)
-  thumbs.forEach(item => {
-    item.addEventListener('click', function() {
-      const active = document.querySelector('.thumb-item.active');
-      if (active) active.classList.remove('active');
-      this.classList.add('active');
-    });
-  });
-
-  // 2. Xử lý Nút 3 gạch
-  hamburger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    navLink.classList.toggle('active');
-    hamburger.classList.toggle('toggle');
-  });
-
-  // 3. Xử lý Menu chính & Menu con
-  parentMenuItems.forEach(li => {
-    li.addEventListener('click', (e) => {
-      const subMenu = li.querySelector('.menu1');
-
-      if (subMenu) {
-        // Nếu là mục có menu con (Thể loại, Quốc gia)
-        e.stopPropagation();
-        subMenu.classList.toggle('show-submenu');
-      } else {
-        // Nếu là mục đơn (Phim mới, Phim lẻ...) -> Click xong đóng Sidebar
-        navLink.classList.remove('active');
-        hamburger.classList.remove('toggle');
-      }
-    });
-  });
-
-  // 4. Click ra ngoài để đóng Menu
-  document.addEventListener('click', (e) => {
-    if (!navLink.contains(e.target) && !hamburger.contains(e.target)) {
-      navLink.classList.remove('active');
-      hamburger.classList.remove('toggle');
-      // Ẩn luôn các menu con đang mở
-      document.querySelectorAll('.menu1').forEach(m => m.classList.remove('show-submenu'));
-    }
-  });
-  </script>
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-col brand-col">
+          <h2 class="footer-logo">NTB<span>.</span></h2>
+          <p>Trải nghiệm xem phim tuyệt đỉnh cùng NTB MovieChill. Tận hưởng kho phim khổng lồ, chất lượng cao và cập nhật liên tục mỗi ngày.</p>
+          <div class="social-icons">
+            <a href="#"><i class="fa-brands fa-twitter"></i></a>
+            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h3>Danh Mục</h3>
+          <ul>
+            <li><a href="#">Phim Mới</a></li>
+            <li><a href="#">Phim Bộ</a></li>
+            <li><a href="#">Phim Lẻ</a></li>
+            <li><a href="#">Phim Chiếu Rạp</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Hỗ Trợ</h3>
+          <ul>
+            <li><a href="#">FAQ's</a></li>
+            <li><a href="#">Điều Khoản Dịch Vụ</a></li>
+            <li><a href="#">Chính Sách Bảo Mật</a></li>
+            <li><a href="#">Liên Hệ</a></li>
+          </ul>
+        </div>
+        <div class="footer-col address-col">
+          <h3>Liên Hệ</h3>
+          <p><strong>Location:</strong> 31 136/64 Đường Cầu Diễn, Minh Khai, Bắc Từ Liêm, Hà Nội</p>
+          <p><strong>Email:</strong> nguyentatbac1222006@gmail.com</p>
+          <p><strong>Phone:</strong> +84 364921061</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>Copyright &copy; 2026 NTB MovieChill. All rights reserved.</p>
+      </div>
+    </footer>
+      <script src="main.js"></script>
   </body>
 </html>
