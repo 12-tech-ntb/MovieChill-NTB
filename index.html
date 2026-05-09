@@ -87,7 +87,7 @@
       </div>
       <div class="navbar">
         <div class="logo">
-          <img src="./ig/ms-icon-310x310.png" alt="logo" />
+          <a href="index.html"><img src="./ig/ms-icon-310x310.png" alt="logo" /></a>
         </div>
         <div>
           <nav>
@@ -110,35 +110,35 @@
                   Thể Loại &#11167;
                   <div class="menu1">
                     <ul class="option1">
-                      <li>Hành động</li>
-                      <li>Kinh dị</li>
-                      <li>Tình cảm</li>
+                      <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/hanh-dong" data-title="Phim Hành động">Hành động</li>
+                      <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/kinh-di" data-title="Phim Kinh dị">Kinh dị</li>
+                      <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/tinh-cam" data-title="Phim Tình cảm">Tình cảm</li>
                     </ul>
                     <ul class="option2">
-                      <li>Cổ trang</li>
-                      <li>Tài liệu</li>
-                      <li>Tâm lý</li>
+                      <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/co-trang" data-title="Phim Cổ trang">Cổ trang</li>
+                      <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/tai-lieu" data-title="Phim Tài liệu">Tài liệu</li>
+                      <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/tam-ly" data-title="Phim Tâm lý">Tâm lý</li>
                     </ul>
                   </div>
                 </li>
                 <li>Quốc Gia &#11167;
                     <div class="menu1">
                         <ul class="option1">
-                            <li>Korea</li>
-                            <li>Japan</li>
-                            <li>China</li>
+                            <li class="nav-action" data-api="https://ophim1.com/v1/api/quoc-gia/han-quoc" data-title="Phim Hàn Quốc">Korea</li>
+                            <li class="nav-action" data-api="https://ophim1.com/v1/api/quoc-gia/nhat-ban" data-title="Phim Nhật Bản">Japan</li>
+                            <li class="nav-action" data-api="https://ophim1.com/v1/api/quoc-gia/trung-quoc" data-title="Phim Trung Quốc">China</li>
                         </ul>
                         <ul class="option2">
-                            <li>USA</li>
-                            <li>France</li>
-                            <li>UK</li>
+                            <li class="nav-action" data-api="https://ophim1.com/v1/api/quoc-gia/au-my" data-title="Phim Âu Mỹ">USA</li>
+                            <li class="nav-action" data-api="https://ophim1.com/v1/api/quoc-gia/phap" data-title="Phim Pháp">France</li>
+                            <li class="nav-action" data-api="https://ophim1.com/v1/api/quoc-gia/anh" data-title="Phim Anh">UK</li>
                         </ul>
                     </div>
                 </li>
-                <li>Phim Mới</li>
-                <li>Phim Bộ</li>
-                <li>Phim Lẻ</li>
-                <li>Phim 4K</li>
+                <li class="nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat" data-title="Phim Mới Cập Nhật">Phim Mới</li>
+                <li class="nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-bo" data-title="Phim Bộ Mới Nhất">Phim Bộ</li>
+                <li class="nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-le" data-title="Phim Lẻ Mới Nhất">Phim Lẻ</li>
+                <li class="nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat" data-title="Phim 4K Mới">Phim 4K</li>
               </ul>
             </div>
             <div class="actions">
@@ -245,23 +245,150 @@
         <div class="block-main">
           <div class="block-item1">
             <div class="item1-title"><h2>Phim Mới Cập Nhật</h2></div>
-            <a href="#!" class="view-all">Xem tất cả <span><i class="fa-solid fa-right-left"></i></span></a>
+            <a href="#!" class="view-all nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat" data-title="Phim Mới Cập Nhật">Xem tất cả <span><i class="fa-solid fa-right-left"></i></span></a>
           </div>
-          <div class="movie-list" id="api-movie-list-1">
-            <!-- Phim mới sẽ được đổ vào đây bằng JS -->
-            <p style="color: white;">Đang tải dữ liệu phim...</p>
+          <div class="slider-wrapper">
+            <button class="slider-btn prev-btn"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="movie-list" id="api-movie-list-1">
+              <!-- Phim mới sẽ được đổ vào đây bằng JS -->
+              <p style="color: white;">Đang tải dữ liệu phim...</p>
+            </div>
+            <button class="slider-btn next-btn"><i class="fa-solid fa-chevron-right"></i></button>
           </div>
         </div>
         
         <div class="block-main">
           <div class="block-item1">
             <div class="item1-title"><h2>Phim Bộ Nổi Bật</h2></div>
-            <a href="#!" class="view-all">Xem tất cả <span><i class="fa-solid fa-right-left"></i></span></a>
+            <a href="#!" class="view-all nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-bo" data-title="Phim Bộ Nổi Bật">Xem tất cả <span><i class="fa-solid fa-right-left"></i></span></a>
           </div>
-          <div class="movie-list" id="api-movie-list-2">
-            <!-- Phim bộ sẽ được đổ vào đây bằng JS -->
-            <p style="color: white;">Đang tải dữ liệu phim...</p>
+          <div class="slider-wrapper">
+            <button class="slider-btn prev-btn"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="movie-list" id="api-movie-list-2">
+              <!-- Phim bộ sẽ được đổ vào đây bằng JS -->
+              <p style="color: white;">Đang tải dữ liệu phim...</p>
+            </div>
+            <button class="slider-btn next-btn"><i class="fa-solid fa-chevron-right"></i></button>
           </div>
+        </div>
+        
+        <!-- BẢNG XẾP HẠNG 4 CỘT -->
+        <div class="ranking-board">
+          <!-- Cột 1: Sôi Nổi Nhất -->
+          <div class="ranking-col">
+            <div class="ranking-header">
+              <i class="fa-solid fa-chart-line" style="color: #efb003;"></i> SÔI NỔI NHẤT
+            </div>
+            <ul class="ranking-list" id="rank-trending">
+              <li><p style="color: white;">Đang tải dữ liệu...</p></li>
+            </ul>
+            <a href="#" class="view-more nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat" data-title="Phim Sôi Nổi Nhất">Xem thêm</a>
+          </div>
+          
+          <!-- Cột 2: Yêu Thích Nhất -->
+          <div class="ranking-col">
+            <div class="ranking-header">
+              <i class="fa-solid fa-heart" style="color: #efb003;"></i> YÊU THÍCH NHẤT
+            </div>
+            <ul class="ranking-list" id="rank-favorite">
+              <li><p style="color: white;">Đang tải dữ liệu...</p></li>
+            </ul>
+            <a href="#" class="view-more nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-chieu-rap" data-title="Phim Yêu Thích Nhất">Xem thêm</a>
+          </div>
+
+          <!-- Cột 3: Thể Loại Hot -->
+          <div class="ranking-col">
+            <div class="ranking-header">
+              <i class="fa-solid fa-folder-open" style="color: #efb003;"></i> THỂ LOẠI HOT
+            </div>
+            <ul class="ranking-list category-list">
+              <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/chinh-kich" data-title="Phim Chính Kịch" style="cursor: pointer;"><span class="rank-num">1.</span> <span class="rank-dash">-</span> <span class="badge-cat" style="background: #8e44ad;">Chính Kịch</span></li>
+              <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/tam-ly" data-title="Phim Tâm Lý" style="cursor: pointer;"><span class="rank-num">2.</span> <span class="rank-dash">-</span> <span class="badge-cat" style="background: #1d72b8;">Tâm Lý</span></li>
+              <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/tinh-cam" data-title="Phim Tình Cảm" style="cursor: pointer;"><span class="rank-num">3.</span> <span class="rank-dash">-</span> <span class="badge-cat" style="background: #a32a3f;">Tình Cảm</span></li>
+              <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/lang-man" data-title="Phim Lãng Mạn" style="cursor: pointer;"><span class="rank-num">4.</span> <span class="rank-dash">-</span> <span class="badge-cat" style="background: #839b25;">Lãng Mạn</span></li>
+              <li class="nav-action" data-api="https://ophim1.com/v1/api/the-loai/hai-huoc" data-title="Phim Hài Hước" style="cursor: pointer;"><span class="rank-num">5.</span> <span class="rank-dash">-</span> <span class="badge-cat" style="background: #d39c3e;">Hài Hước</span></li>
+            </ul>
+          </div>
+
+          <!-- Cột 4: Hoạt Hình Hot -->
+          <div class="ranking-col">
+            <div class="ranking-header">
+              <i class="fa-solid fa-bolt" style="color: #efb003;"></i> HOẠT HÌNH HOT
+            </div>
+            <ul class="ranking-list" id="rank-anime">
+              <li><p style="color: white;">Đang tải dữ liệu...</p></li>
+            </ul>
+            <a href="#" class="view-more nav-action" data-api="https://ophim1.com/v1/api/danh-sach/hoat-hinh" data-title="Hoạt Hình Hot">Xem thêm</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top 10 trong ngày -->
+      <div class="block-main top10-section" style="margin-top: 40px;">
+        <div class="block-item1">
+          <div class="item1-title"><h2>Top 10 trong ngày</h2></div>
+        </div>
+        <div class="slider-wrapper top10-slider-wrapper">
+          <button class="slider-btn prev-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <div class="movie-list top10-list" id="api-top10-list">
+            <!-- Dữ liệu top 10 sẽ được đổ vào đây -->
+            <p style="color: white; padding-left: 40px;">Đang tải Top 10...</p>
+          </div>
+          <button class="slider-btn next-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+
+        <!-- Danh sách phim theo Quốc gia (Bố cục Sidebar) -->
+        <div class="country-section block-main" style="margin-top: 40px; padding: 30px; background-color: #1a1a20; border-radius: 10px;">
+          
+          <!-- Nhóm Hàn Quốc -->
+          <div class="country-group">
+            <div class="country-sidebar">
+              <h2 class="country-title">Phim Hàn <br>Quốc mới</h2>
+              <a href="#" class="country-view-all nav-action" data-api="https://ophim1.com/v1/api/quoc-gia/han-quoc" data-title="Phim Hàn Quốc Mới">Xem toàn bộ <i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-left: 3px;"></i></a>
+            </div>
+            <div class="country-slider-wrapper slider-wrapper">
+              <button class="slider-btn prev-btn"><i class="fa-solid fa-chevron-left"></i></button>
+              <div class="movie-list" id="api-country-korea">
+                <p style="color: white; padding-left: 10px;">Đang tải dữ liệu...</p>
+              </div>
+              <button class="slider-btn next-btn"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+
+          <div class="country-divider"></div>
+
+          <!-- Nhóm Trung Quốc -->
+          <div class="country-group">
+            <div class="country-sidebar">
+              <h2 class="country-title">Phim Trung <br>Quốc mới</h2>
+              <a href="#" class="country-view-all nav-action" data-api="https://ophim1.com/v1/api/quoc-gia/trung-quoc" data-title="Phim Trung Quốc Mới">Xem toàn bộ <i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-left: 3px;"></i></a>
+            </div>
+            <div class="country-slider-wrapper slider-wrapper">
+              <button class="slider-btn prev-btn"><i class="fa-solid fa-chevron-left"></i></button>
+              <div class="movie-list" id="api-country-china">
+                <p style="color: white; padding-left: 10px;">Đang tải dữ liệu...</p>
+              </div>
+              <button class="slider-btn next-btn"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+
+          <div class="country-divider"></div>
+
+          <!-- Nhóm Âu Mỹ -->
+          <div class="country-group" style="margin-bottom: 0;">
+            <div class="country-sidebar">
+              <h2 class="country-title">Phim Âu <br>Mỹ mới</h2>
+              <a href="#" class="country-view-all nav-action" data-api="https://ophim1.com/v1/api/quoc-gia/au-my" data-title="Phim Âu Mỹ Mới">Xem toàn bộ <i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-left: 3px;"></i></a>
+            </div>
+            <div class="country-slider-wrapper slider-wrapper">
+              <button class="slider-btn prev-btn"><i class="fa-solid fa-chevron-left"></i></button>
+              <div class="movie-list" id="api-country-usuk">
+                <p style="color: white; padding-left: 10px;">Đang tải dữ liệu...</p>
+              </div>
+              <button class="slider-btn next-btn"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -273,6 +400,12 @@
           <div class="iframe-container">
             <iframe id="video-iframe" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
           </div>
+          <div class="episode-container">
+            <h4 style="color: #efb003; margin: 15px 0 10px;">Chọn tập:</h4>
+            <div id="episode-list" class="episode-list">
+              <!-- JS will inject episode buttons here -->
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -283,9 +416,9 @@
           <p>Trải nghiệm xem phim tuyệt đỉnh cùng NTB MovieChill. Tận hưởng kho phim khổng lồ, chất lượng cao và cập nhật liên tục mỗi ngày.</p>
           <div class="social-icons">
             <a href="#"><i class="fa-brands fa-twitter"></i></a>
-            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
-            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com/bacnguyentat12206"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/?hl=en"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="https://www.instagram.com/?hl=en"><i class="fa-brands fa-instagram"></i></a>
           </div>
         </div>
         <div class="footer-col">
