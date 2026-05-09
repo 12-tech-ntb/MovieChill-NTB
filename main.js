@@ -43,7 +43,7 @@
       rating: '⭐9.4', years: '2025', quality: '4K', episode: 'Tập 5',
       types: ['Tâm Lý', 'Kinh Dị', 'Giật Gân'],
       desc: 'Những vòng lặp tâm lý gay cấn và các bí mật kinh hoàng được vén màn trong một trò chơi sinh tử không lối thoát, nơi lòng tin là thứ xa xỉ nhất.',
-      slug: 'tro-choi-con-muc' // Tạm dùng Squid Game
+      slug: 'tro-choi-thao-tung' // Link chuẩn từ API
     }
   ];
 
@@ -230,6 +230,7 @@
   const videoIframe = document.getElementById('video-iframe');
   const videoTitle = document.getElementById('video-title');
   const videoCloseBtn = document.querySelector('.video-close-btn');
+  const episodeList = document.getElementById('episode-list');
 
   // Đóng Modal Video
   if (videoCloseBtn) {
@@ -261,11 +262,72 @@
 
       renderMovies(list1Movies, list1, domainImage);
       renderMovies(list2Movies, list2, domainImage);
+
+      // Render Ranking Board Sôi Nổi Nhất
+      const rankTrending = document.getElementById('rank-trending');
+      if(rankTrending) renderRankingList(movies.slice(0, 5), rankTrending, domainImage, 'trending');
+
+      // Fetch Yêu Thích Nhất (Chiếu Rạp) & Hoạt Hình Hot
+      try {
+        const [favRes, animeRes] = await Promise.all([
+          fetch('https://ophim1.com/v1/api/danh-sach/phim-chieu-rap'),
+          fetch('https://ophim1.com/v1/api/danh-sach/hoat-hinh')
+        ]);
+        
+        const favData = await favRes.json();
+        const favResponseData = favData.data || favData;
+        const favDomainImage = favResponseData.APP_DOMAIN_CDN_IMAGE ? favResponseData.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/' : 'https://img.ophim.live/uploads/movies/';
+        const favMovies = favResponseData.items || [];
+        const rankFavorite = document.getElementById('rank-favorite');
+        if(rankFavorite) renderRankingList(favMovies.slice(0, 5), rankFavorite, favDomainImage, 'favorite');
+
+        const animeData = await animeRes.json();
+        const animeResponseData = animeData.data || animeData;
+        const animeDomainImage = animeResponseData.APP_DOMAIN_CDN_IMAGE ? animeResponseData.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/' : 'https://img.ophim.live/uploads/movies/';
+        const animeMovies = animeResponseData.items || [];
+        const rankAnime = document.getElementById('rank-anime');
+        if(rankAnime) renderRankingList(animeMovies.slice(0, 5), rankAnime, animeDomainImage, 'anime');
+
+      } catch (rankingError) {
+        console.error('Lỗi khi tải phim Ranking Board:', rankingError);
+      }
+
     } catch (error) {
       console.error('Lỗi khi tải phim trang chủ:', error);
       if(list1) list1.innerHTML = '<p style="color:white; padding: 20px;">Lỗi tải dữ liệu.</p>';
       if(list2) list2.innerHTML = '<p style="color:white; padding: 20px;">Lỗi tải dữ liệu.</p>';
     }
+  }
+
+  // Render Bảng xếp hạng
+  function renderRankingList(movies, container, domainImage, type) {
+    if (!container) return;
+    container.innerHTML = '';
+    movies.forEach((movie, index) => {
+      let iconHtml = '';
+      if (type === 'trending') {
+        iconHtml = '<span class="rank-icon"><i class="fa-solid fa-arrow-trend-up" style="color: #839b25;"></i></span>';
+      } else if (type === 'favorite') {
+        iconHtml = '<span class="rank-icon"><span class="rank-dash">-</span></span>';
+      } else if (type === 'anime') {
+        iconHtml = '<span class="rank-icon"><i class="fa-solid fa-bolt" style="color: #efb003;"></i></span>';
+      }
+
+      const imgUrl = domainImage + movie.thumb_url;
+      const li = document.createElement('li');
+      li.style.cursor = 'pointer';
+      li.onclick = () => playMovie(movie.slug);
+      li.innerHTML = `
+        <span class="rank-num">${index + 1}.</span>
+        ${iconHtml}
+        <img src="${imgUrl}" alt="${movie.name}" class="rank-thumb">
+        <div class="rank-info">
+          <h4 class="rank-title" title="${movie.name}">${movie.name}</h4>
+          <span class="rank-year">(${movie.year || '2026'})</span>
+        </div>
+      `;
+      container.appendChild(li);
+    });
   }
 
   // Render HTML cho danh sách phim
@@ -279,12 +341,13 @@
       card.innerHTML = `
         <div class="card-wrapper">
           <div class="item-info">
-            <img src="${imgUrl}" alt="${movie.name}">
+            <img class="bg-blur" src="${imgUrl}" alt="">
+            <img class="main-img" src="${imgUrl}" alt="${movie.name}">
             <span class="episode">${movie.episode_current || 'Full'}</span>
           </div>
           <div class="card-info">
             <h3 class="title-vn">${movie.name}</h3>
-            <p class="titel-en">${movie.origin_name || ''}</p>
+            <p class="title-en">${movie.origin_name || ''}</p>
             <div class="hover">
               <div class="action-buttons">
                 <button class="btn btn-play" onclick="playMovie('${movie.slug}')"><i class="fa-solid fa-play"></i>Xem Ngay</button>
@@ -318,6 +381,7 @@
   // Xem phim (Phát Video)
   window.playMovie = async function(slug) {
     if(videoTitle) videoTitle.textContent = "Đang tải...";
+    if(episodeList) episodeList.innerHTML = ""; // Xóa danh sách tập cũ
     if(videoModal) videoModal.classList.add('show');
     try {
       const response = await fetch(API_DETAIL + slug);
@@ -327,8 +391,39 @@
       if(videoTitle) videoTitle.textContent = movie.name;
 
       if (movie.episodes && movie.episodes.length > 0 && movie.episodes[0].server_data && movie.episodes[0].server_data.length > 0) {
-        const linkEmbed = movie.episodes[0].server_data[0].link_embed;
-        if(videoIframe) videoIframe.src = linkEmbed;
+        const episodes = movie.episodes[0].server_data;
+        
+        // Mặc định phát tập đầu tiên
+        if(videoIframe) videoIframe.src = episodes[0].link_embed;
+
+        // Render danh sách tập
+        if(episodeList) {
+          episodes.forEach((ep, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'ep-btn';
+            if (index === 0) btn.classList.add('active'); // Mặc định tập 1 được chọn
+            
+            // Xử lý tên tập phim (nếu là "Full" thì giữ nguyên, nếu là số thì thêm chữ "Tập")
+            let epName = ep.name;
+            if(!isNaN(epName) && epName !== '') {
+              epName = 'Tập ' + epName;
+            }
+            btn.textContent = epName;
+
+            btn.addEventListener('click', () => {
+               // Xóa class active của các nút khác
+               document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
+               // Đổi màu nút được click
+               btn.classList.add('active');
+               // Đổi link video
+               if(videoIframe) videoIframe.src = ep.link_embed;
+               // Cập nhật tiêu đề video
+               if(videoTitle) videoTitle.textContent = movie.name + " - " + epName;
+            });
+            
+            episodeList.appendChild(btn);
+          });
+        }
       } else {
         if(videoTitle) videoTitle.textContent = "Lỗi: Không tìm thấy tập phim để phát.";
       }
@@ -369,28 +464,7 @@
       if (e.key === 'Enter') {
         const keyword = this.value.trim();
         if(keyword !== '') {
-          // Ẩn trang chủ, hiện kết quả
-          if(mainHomeContent) mainHomeContent.style.display = 'none';
-          if(searchResultsSection) searchResultsSection.style.display = 'block';
-          if(searchKeywordSpan) searchKeywordSpan.textContent = keyword;
-          if(searchMovieList) searchMovieList.innerHTML = '<p style="color:white; grid-column: 1 / -1; padding: 20px;">Đang tìm kiếm...</p>';
-
-          try {
-            const response = await fetch(API_SEARCH + encodeURIComponent(keyword));
-            const data = await response.json();
-            const responseData = data.data || data;
-            const domainImage = responseData.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/';
-            const movies = responseData.items || [];
-
-            if (movies && movies.length > 0) {
-                renderMovies(movies, searchMovieList, domainImage);
-            } else {
-                searchMovieList.innerHTML = '<p style="color:white; grid-column: 1 / -1; padding: 20px;">Không tìm thấy phim nào phù hợp.</p>';
-            }
-          } catch(error) {
-            console.error("Lỗi tìm kiếm:", error);
-            searchMovieList.innerHTML = '<p style="color:white; grid-column: 1 / -1; padding: 20px;">Lỗi kết nối khi tìm kiếm.</p>';
-          }
+          loadSearchData(API_SEARCH + encodeURIComponent(keyword), keyword);
         } else {
           // Trở về trang chủ
           if(mainHomeContent) mainHomeContent.style.display = 'block';
@@ -400,5 +474,165 @@
     });
   }
 
+  // --- XỬ LÝ MENU NAVIGATION API (Dùng Event Delegation để bao quát cả phần mới thêm) ---
+  document.addEventListener('click', function(e) {
+    const navItem = e.target.closest('.nav-action');
+    if (navItem) {
+      e.preventDefault();
+      const apiUrl = navItem.getAttribute('data-api');
+      const title = navItem.getAttribute('data-title');
+      
+      if(apiUrl) {
+        loadSearchData(apiUrl, title);
+      }
+    }
+  });
+
+  // --- HISTORY & NAVIGATION STATE ---
+  history.replaceState({ view: 'home' }, '', window.location.pathname);
+
+  window.addEventListener('popstate', function(e) {
+    if (e.state) {
+      if (e.state.view === 'home') {
+        if(mainHomeContent) mainHomeContent.style.display = 'block';
+        if(searchResultsSection) searchResultsSection.style.display = 'none';
+      } else if (e.state.view === 'search') {
+        loadSearchData(e.state.apiUrl, e.state.title, false);
+      }
+    } else {
+       if(mainHomeContent) mainHomeContent.style.display = 'block';
+       if(searchResultsSection) searchResultsSection.style.display = 'none';
+    }
+  });
+
+  async function loadSearchData(apiUrl, title, pushHistory = true) {
+      if(pushHistory) {
+        history.pushState({ view: 'search', apiUrl: apiUrl, title: title }, '', '#search');
+      }
+
+      if(mainHomeContent) mainHomeContent.style.display = 'none';
+      if(searchResultsSection) searchResultsSection.style.display = 'block';
+      if(searchKeywordSpan) searchKeywordSpan.textContent = title;
+      if(searchMovieList) searchMovieList.innerHTML = '<p style="color:white; grid-column: 1 / -1; padding: 20px;">Đang tải danh sách phim...</p>';
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const responseData = data.data || data;
+        
+        const domainImage = responseData.APP_DOMAIN_CDN_IMAGE ? responseData.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/' : 'https://img.ophim.live/uploads/movies/';
+        const movies = responseData.items || [];
+
+        if (movies && movies.length > 0) {
+            renderMovies(movies, searchMovieList, domainImage);
+        } else {
+            searchMovieList.innerHTML = '<p style="color:white; grid-column: 1 / -1; padding: 20px;">Đang cập nhật phim cho mục này.</p>';
+        }
+      } catch(error) {
+        console.error("Lỗi khi tải danh mục:", error);
+        searchMovieList.innerHTML = '<p style="color:white; grid-column: 1 / -1; padding: 20px;">Lỗi kết nối khi tải danh sách.</p>';
+      }
+  }
+
+  // --- XỬ LÝ NÚT TRƯỢT (SLIDER ARROWS) - DÙNG TRANSFORM ĐỂ KHÔNG BỊ CLIP CARD ---
+  const sliderWrappers = document.querySelectorAll('.slider-wrapper');
+  sliderWrappers.forEach(wrapper => {
+    const prevBtn = wrapper.querySelector('.prev-btn');
+    const nextBtn = wrapper.querySelector('.next-btn');
+    const movieList = wrapper.querySelector('.movie-list');
+
+    let currentTranslate = 0;
+
+    if (prevBtn && nextBtn && movieList) {
+      prevBtn.addEventListener('click', () => {
+        const viewWidth = wrapper.clientWidth;
+        currentTranslate += viewWidth;
+        if (currentTranslate > 0) currentTranslate = 0;
+        movieList.style.transform = `translateX(${currentTranslate}px)`;
+      });
+      
+      nextBtn.addEventListener('click', () => {
+        const viewWidth = wrapper.clientWidth;
+        const listWidth = movieList.scrollWidth;
+        
+        currentTranslate -= viewWidth;
+        
+        // Giới hạn không cho trượt quá danh sách
+        const maxScroll = listWidth - viewWidth;
+        if (Math.abs(currentTranslate) > maxScroll) {
+          currentTranslate = -maxScroll;
+        }
+        
+        movieList.style.transform = `translateX(${currentTranslate}px)`;
+      });
+    }
+  });
+
+  // Hàm render Top 10
+  function renderTop10Movies(movies, container, domainImage) {
+    if (!container) return;
+    container.innerHTML = '';
+    movies.forEach((movie, index) => {
+      // Ưu tiên dùng poster_url (ảnh dọc), nếu không có thì dùng ảnh ngang (thumb_url)
+      const imgPath = movie.poster_url || movie.thumb_url;
+      const imgUrl = domainImage + imgPath;
+      
+      const card = document.createElement('div');
+      card.className = 'top10-card';
+      card.onclick = () => playMovie(movie.slug);
+      card.innerHTML = `
+        <div class="top10-img-box">
+          <img src="${imgUrl}" alt="${movie.name}">
+          <span class="top10-badge">${movie.episode_current || 'Full'}</span>
+        </div>
+        <div class="top10-info-container">
+          <div class="top10-rank">${index + 1}</div>
+          <div class="top10-text">
+            <h4 class="top10-title" title="${movie.name}">${movie.name}</h4>
+            <p class="top10-sub" title="${movie.origin_name || ''}">${movie.origin_name || ''} (${movie.year || '2026'})</p>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  // Lấy dữ liệu Top 10
+  async function fetchTop10() {
+    const container = document.getElementById('api-top10-list');
+    if (!container) return;
+    
+    try {
+      const response = await fetch('https://ophim1.com/v1/api/danh-sach/phim-bo?page=2'); // Lấy page 2 cho khác biệt
+      const data = await response.json();
+      const domainImage = data.data.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/';
+      const movies = data.data.items.slice(0, 10); // Lấy đúng 10 phim
+      renderTop10Movies(movies, container, domainImage);
+    } catch(error) {
+      console.error("Lỗi tải Top 10:", error);
+      container.innerHTML = '<p style="color:white; padding-left: 40px;">Lỗi tải dữ liệu Top 10.</p>';
+    }
+  }
+
+  // Lấy dữ liệu phim theo quốc gia (Sidebar layout)
+  async function fetchCountryMovies(slug, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    try {
+      const response = await fetch(`https://ophim1.com/v1/api/quoc-gia/${slug}`);
+      const data = await response.json();
+      const domainImage = data.data.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/';
+      const movies = data.data.items.slice(0, 10);
+      renderMovies(movies, container, domainImage);
+    } catch(error) {
+      console.error(`Lỗi tải phim ${slug}:`, error);
+      container.innerHTML = '<p style="color:white; padding-left: 10px;">Lỗi tải dữ liệu.</p>';
+    }
+  }
+
   // Khởi tạo lấy dữ liệu
   fetchHomeMovies();
+  fetchTop10();
+  fetchCountryMovies('han-quoc', 'api-country-korea');
+  fetchCountryMovies('trung-quoc', 'api-country-china');
+  fetchCountryMovies('au-my', 'api-country-usuk');
