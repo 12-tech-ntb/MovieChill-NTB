@@ -393,40 +393,31 @@
       const movie = responseData.movie || responseData.item;
       if(videoTitle) videoTitle.textContent = movie.name;
 
-      if (movie.episodes && movie.episodes.length > 0 && movie.episodes[0].server_data && movie.episodes[0].server_data.length > 0) {
-        const episodes = movie.episodes[0].server_data;
-        
-        // Mặc định phát tập đầu tiên
-        if(videoIframe) videoIframe.src = episodes[0].link_embed;
+      const serverContainer = document.getElementById('server-container');
+      const serverListEl = document.getElementById('server-list');
+      if (serverContainer) serverContainer.style.display = 'none';
+      if (serverListEl) serverListEl.innerHTML = '';
 
-        // Render danh sách tập
-        if(episodeList) {
-          episodes.forEach((ep, index) => {
-            const btn = document.createElement('button');
-            btn.className = 'ep-btn';
-            if (index === 0) btn.classList.add('active'); // Mặc định tập 1 được chọn
-            
-            // Xử lý tên tập phim (nếu là "Full" thì giữ nguyên, nếu là số thì thêm chữ "Tập")
-            let epName = ep.name;
-            if(!isNaN(epName) && epName !== '') {
-              epName = 'Tập ' + epName;
-            }
-            btn.textContent = epName;
-
-            btn.addEventListener('click', () => {
-               // Xóa class active của các nút khác
-               document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
-               // Đổi màu nút được click
-               btn.classList.add('active');
-               // Đổi link video
-               if(videoIframe) videoIframe.src = ep.link_embed;
-               // Cập nhật tiêu đề video
-               if(videoTitle) videoTitle.textContent = movie.name + " - " + epName;
+      if (movie.episodes && movie.episodes.length > 0) {
+        // Hiển thị danh sách server
+        if (serverContainer && serverListEl) {
+          serverContainer.style.display = 'block';
+          movie.episodes.forEach((server, sIndex) => {
+            const sBtn = document.createElement('button');
+            sBtn.className = 'server-btn';
+            if (sIndex === 0) sBtn.classList.add('active');
+            sBtn.textContent = server.server_name;
+            sBtn.addEventListener('click', () => {
+              document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
+              sBtn.classList.add('active');
+              renderEpisodes(server.server_data, movie.name);
             });
-            
-            episodeList.appendChild(btn);
+            serverListEl.appendChild(sBtn);
           });
         }
+
+        // Mặc định render server đầu tiên
+        renderEpisodes(movie.episodes[0].server_data, movie.name);
       } else {
         if(videoTitle) videoTitle.textContent = "Lỗi: Không tìm thấy tập phim để phát.";
       }
@@ -435,6 +426,40 @@
       if(videoTitle) videoTitle.textContent = "Lỗi tải phim.";
     }
   }
+
+  // Hàm render danh sách tập phim cho server đã chọn
+  function renderEpisodes(episodes, movieName) {
+    if (!episodeList) return;
+    episodeList.innerHTML = "";
+
+    // Mặc định phát tập đầu tiên của server này
+    if (episodes.length > 0 && videoIframe) {
+      videoIframe.src = episodes[0].link_embed;
+      if (videoTitle) videoTitle.textContent = movieName + " - " + (episodes[0].name.includes('Tập') ? episodes[0].name : 'Tập ' + episodes[0].name);
+    }
+
+    episodes.forEach((ep, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'ep-btn';
+      if (index === 0) btn.classList.add('active'); // Mặc định tập 1 được chọn
+      
+      let epName = ep.name;
+      if(!isNaN(epName) && epName !== '') {
+        epName = 'Tập ' + epName;
+      }
+      btn.textContent = epName;
+
+      btn.addEventListener('click', () => {
+         document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
+         btn.classList.add('active');
+         if(videoIframe) videoIframe.src = ep.link_embed;
+         if(videoTitle) videoTitle.textContent = movieName + " - " + epName;
+      });
+      
+      episodeList.appendChild(btn);
+    });
+  }
+
 
 
   // Cập nhật hàm Like
