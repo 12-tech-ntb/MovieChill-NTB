@@ -383,6 +383,9 @@
     if(videoTitle) videoTitle.textContent = "Đang tải...";
     if(episodeList) episodeList.innerHTML = ""; // Xóa danh sách tập cũ
     if(videoModal) videoModal.classList.add('show');
+    // Ẩn search dropdown nếu đang mở
+    hideSuggestions();
+
     try {
       const response = await fetch(API_DETAIL + slug);
       const resData = await response.json();
@@ -433,6 +436,7 @@
     }
   }
 
+
   // Cập nhật hàm Like
   function updateLikeButtons(container) {
     const likeBtns = container.querySelectorAll('.btn-icon');
@@ -457,22 +461,107 @@
     });
   }
 
-  // Tìm kiếm
+  // =============================================
+  // Tìm kiếm với AUTOCOMPLETE DROPDOWN gợi ý
+  // =============================================
   const searchInputAPI = document.querySelector('.search');
+  const searchContainer = document.querySelector('.search-container');
+
+  // Tạo dropdown gợi ý
+  const suggestBox = document.createElement('div');
+  suggestBox.id = 'search-suggest-box';
+  suggestBox.className = 'search-suggest-box';
+  if (searchContainer) searchContainer.appendChild(suggestBox);
+
+  function hideSuggestions() {
+    suggestBox.classList.remove('show');
+    suggestBox.innerHTML = '';
+  }
+
+  // Ẩn dropdown khi click ra ngoài
+  document.addEventListener('click', function(e) {
+    if (!searchContainer || !searchContainer.contains(e.target)) {
+      hideSuggestions();
+    }
+  });
+
+  let debounceTimer = null;
+  const IMG_DOMAIN = 'https://img.ophim.live/uploads/movies/';
+
   if (searchInputAPI) {
-    searchInputAPI.addEventListener('keypress', async function (e) {
+    // Autocomplete khi gõ
+    searchInputAPI.addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      const keyword = this.value.trim();
+
+      if (keyword.length < 2) {
+        hideSuggestions();
+        return;
+      }
+
+      debounceTimer = setTimeout(async () => {
+        try {
+          const res = await fetch(API_SEARCH + encodeURIComponent(keyword));
+          const json = await res.json();
+          const responseData = json.data || json;
+          const movies = responseData.items || [];
+
+          if (movies.length === 0) {
+            hideSuggestions();
+            return;
+          }
+
+          // Giới hạn hiển 8 gợi ý
+          const top = movies.slice(0, 8);
+          suggestBox.innerHTML = '';
+
+          top.forEach(movie => {
+            const imgUrl = IMG_DOMAIN + (movie.poster_url || movie.thumb_url);
+            const item = document.createElement('div');
+            item.className = 'suggest-item';
+            item.innerHTML = `
+              <img src="${imgUrl}" alt="${movie.name}" class="suggest-thumb" onerror="this.src='${IMG_DOMAIN}${movie.thumb_url}'">
+              <div class="suggest-info">
+                <span class="suggest-title">${movie.name}</span>
+                <span class="suggest-meta">${movie.origin_name || ''} &bull; ${movie.year || ''} &bull; ${movie.episode_current || 'Full'}</span>
+              </div>
+              <i class="fa-solid fa-play suggest-play-icon"></i>
+            `;
+            item.addEventListener('mousedown', (e) => {
+              e.preventDefault(); // Ngăn blur xảy ra trước click
+              searchInputAPI.value = movie.name;
+              hideSuggestions();
+              playMovie(movie.slug);
+            });
+            suggestBox.appendChild(item);
+          });
+
+          suggestBox.classList.add('show');
+        } catch(err) {
+          console.error('Lỗi autocomplete:', err);
+        }
+      }, 350);
+    });
+
+    // Nhấn Enter → hiển danh sách kết quả như cũ
+    searchInputAPI.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
+        hideSuggestions();
         const keyword = this.value.trim();
-        if(keyword !== '') {
+        if (keyword !== '') {
           loadSearchData(API_SEARCH + encodeURIComponent(keyword), keyword);
         } else {
-          // Trở về trang chủ
           if(mainHomeContent) mainHomeContent.style.display = 'block';
           if(searchResultsSection) searchResultsSection.style.display = 'none';
         }
       }
+      if (e.key === 'Escape') {
+        hideSuggestions();
+        searchInputAPI.blur();
+      }
     });
   }
+
 
   // --- XỬ LÝ MENU NAVIGATION API (Dùng Event Delegation để bao quát cả phần mới thêm) ---
   document.addEventListener('click', function(e) {
@@ -505,7 +594,7 @@
     }
   });
 
-  async function loadSearchData(apiUrl, title, pushHistory = true) {
+  window.loadSearchData = async function loadSearchData(apiUrl, title, pushHistory = true) {
       if(pushHistory) {
         history.pushState({ view: 'search', apiUrl: apiUrl, title: title }, '', '#search');
       }
@@ -526,13 +615,67 @@
         if (movies && movies.length > 0) {
             renderMovies(movies, searchMovieList, domainImage);
         } else {
-            searchMovieList.innerHTML = '<p style="color:white; grid-column: 1 / -1; padding: 20px;">Đang cập nhật phim cho mục này.</p>';
+            searchMovieList.innerHTML = '<p style="color:#aaa; grid-column: 1 / -1; padding: 20px; font-style:italic;">Không tìm thấy kết quả cho mục này.</p>';
         }
       } catch(error) {
         console.error("Lỗi khi tải danh mục:", error);
         searchMovieList.innerHTML = '<p style="color:white; grid-column: 1 / -1; padding: 20px;">Lỗi kết nối khi tải danh sách.</p>';
       }
   }
+
+  // --- Tìm kiếm phim theo tên diễn viên (thử nhiều từ khóa) ---
+  async function searchByActor(actorName) {
+    if(mainHomeContent) mainHomeContent.style.display = 'none';
+    if(searchResultsSection) searchResultsSection.style.display = 'block';
+    if(searchKeywordSpan) searchKeywordSpan.textContent = `Diễn viên: ${actorName}`;
+    if(searchMovieList) searchMovieList.innerHTML = `<p style="color:white; grid-column: 1 / -1; padding: 20px;">Đang tìm phim có diễn viên <strong style="color:#efb003">${actorName}</strong>...</p>`;
+    history.pushState({ view: 'search', apiUrl: API_SEARCH + encodeURIComponent(actorName), title: `Diễn viên: ${actorName}` }, '', '#search');
+
+    // Thử lần lượt: tên đầy đủ → từng từ riêng lẻ
+    const nameParts = actorName.split(/[\s\-]+/).filter(p => p.length > 1);
+    const keywords = [actorName, ...nameParts].filter((v, i, a) => a.indexOf(v) === i);
+
+    const domainImage = 'https://img.ophim.live/uploads/movies/';
+    let foundMovies = [];
+    let usedKeyword = '';
+
+    for (const kw of keywords) {
+      try {
+        const res = await fetch(API_SEARCH + encodeURIComponent(kw));
+        const json = await res.json();
+        const responseData = json.data || json;
+        const items = responseData.items || [];
+        if (items.length > 0) {
+          foundMovies = items;
+          usedKeyword = kw;
+          break;
+        }
+      } catch(e) {
+        console.error('Lỗi tìm kiếm actor:', e);
+      }
+    }
+
+    if (foundMovies.length > 0) {
+      if(searchKeywordSpan) searchKeywordSpan.textContent = `Diễn viên: ${actorName}`;
+      renderMovies(foundMovies, searchMovieList, domainImage);
+    } else {
+      // Thông báo thân thiện khi không có kết quả
+      const suggestionBtns = nameParts.map(p =>
+        `<button onclick="loadSearchData('${API_SEARCH}${encodeURIComponent(p)}', '${p}')" style="background:rgba(239,176,3,0.12); border:1px solid rgba(239,176,3,0.5); color:#efb003; padding:8px 18px; border-radius:20px; cursor:pointer; font-size:13px; transition:all 0.2s;" onmouseover="this.style.background='rgba(239,176,3,0.25)'" onmouseout="this.style.background='rgba(239,176,3,0.12)'">🔍 Tìm "${p}"</button>`
+      ).join('');
+      searchMovieList.innerHTML = `
+        <div style="grid-column: 1 / -1; padding: 40px 20px; text-align: center;">
+          <div style="font-size: 52px; margin-bottom: 16px;">🎬</div>
+          <h3 style="color:#fff; margin-bottom:10px; font-size:18px;">Không tìm thấy phim của <span style="color:#efb003;">${actorName}</span></h3>
+          <p style="color:#888; font-size:14px; max-width:450px; margin: 0 auto 24px; line-height:1.6;">
+            Cơ sở dữ liệu chưa hỗ trợ tìm kiếm trực tiếp theo tên diễn viên. Thử tìm theo tên phim mà diễn viên này đóng.
+          </p>
+          ${nameParts.length > 0 ? `<div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">${suggestionBtns}</div>` : ''}
+        </div>
+      `;
+    }
+  }
+
 
   // --- XỬ LÝ NÚT TRƯỢT (SLIDER ARROWS) - DÙNG TRANSFORM ĐỂ KHÔNG BỊ CLIP CARD ---
   const sliderWrappers = document.querySelectorAll('.slider-wrapper');
