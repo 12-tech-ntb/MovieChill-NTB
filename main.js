@@ -804,3 +804,36 @@
   fetchCountryMovies('han-quoc', 'api-country-korea');
   fetchCountryMovies('trung-quoc', 'api-country-china');
   fetchCountryMovies('au-my', 'api-country-usuk');
+
+  // ============================================================
+  //  DARK / LIGHT MODE TOGGLE
+  // ============================================================
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  const themeIcon = themeToggleBtn ? themeToggleBtn.querySelector('.theme-icon') : null;
+
+  // Khởi tạo theme từ localStorage (giữ trạng thái qua các lần load)
+  const savedTheme = localStorage.getItem('moviechill-theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-mode');
+    if (themeIcon) themeIcon.textContent = '☀️';
+  } else {
+    if (themeIcon) themeIcon.textContent = '🌙';
+  }
+
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+      const isLight = document.body.classList.toggle('light-mode');
+
+      // Animate icon with a quick flip
+      if (themeIcon) {
+        themeIcon.style.transform = 'scale(0) rotate(180deg)';
+        setTimeout(() => {
+          themeIcon.textContent = isLight ? '☀️' : '🌙';
+          themeIcon.style.transform = 'scale(1) rotate(0deg)';
+        }, 200);
+      }
+
+      // Persist preference
+      localStorage.setItem('moviechill-theme', isLight ? 'light' : 'dark');
+    });
+  }
