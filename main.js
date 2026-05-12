@@ -1,3 +1,31 @@
+// ==========================================
+// KẾT NỐI FIREBASE 
+// ==========================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+  getAuth, 
+  signInWithPopup, 
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCMqWIl6o9wFuPNWAUV_LDVgqpfToXsCQs", // Trả về q viết thường
+  authDomain: "moviechill-aef7b.firebaseapp.com",
+  projectId: "moviechill-aef7b",
+  storageBucket: "moviechill-aef7b.firebasestorage.app",
+  messagingSenderId: "310759265527",
+  appId: "1:310759265527:web:5ed6808773d5035f5caff2",
+  measurementId: "G-GS9SX2BVPF"
+};
+
+// Khởi tạo Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 // --- 1. DỮ LIỆU PHIM HERO (Dùng cho slider) ---
   const heroMoviesData = [
     {
@@ -836,4 +864,134 @@
       // Persist preference
       localStorage.setItem('moviechill-theme', isLight ? 'light' : 'dark');
     });
-  }
+  }
+
+  // main.js - Tích hợp Login Modal mới
+
+document.addEventListener('DOMContentLoaded', () => {
+  // --- EXISTING CODE (giữ nguyên code cũ của em) ---
+  // ... các hàm liên quan đến slider, menu, vv. ...
+
+  // --- LOGIC CHO LOGIN MODAL MỚI ---
+  const loginModal = document.getElementById('login-modal');
+  const btnOpenLogin = document.getElementById('btn-login-header'); 
+  const btnCloseLogin = document.querySelector('.login-close-btn');
+  const googleBtn = document.querySelector('.google-btn');
+
+  // Hàm cập nhật UI khi đăng nhập/đăng xuất
+  function updateAuthUI(user) {
+    if (user) {
+      // Khi đã đăng nhập - Sử dụng cấu trúc HTML mới chuyên nghiệp hơn
+      btnOpenLogin.classList.add('user-logged-in-btn');
+      btnOpenLogin.innerHTML = `
+        <img src="${user.photoURL || './ig/default-avatar.png'}" class="user-avatar" alt="avatar">
+        <span class="user-name">${user.displayName || 'Người dùng'}</span>
+      `;
+      btnOpenLogin.title = "Click để Đăng Xuất";
+      
+      btnOpenLogin.onclick = (e) => {
+        e.preventDefault();
+        if(confirm('Chào ' + (user.displayName || 'bạn') + ', bạn có muốn đăng xuất khỏi MovieChill không?')) {
+          signOut(auth).then(() => {
+            alert('Đã đăng xuất thành công!');
+            location.reload();
+          });
+        }
+      };
+
+      if (loginModal.classList.contains('show')) {
+        closeLoginModal();
+      }
+    } else {
+      // Khi chưa đăng nhập
+      btnOpenLogin.classList.remove('user-logged-in-btn');
+      btnOpenLogin.innerHTML = `<i class="fa-regular fa-user"></i> Đăng Nhập`;
+      btnOpenLogin.title = "Đăng Nhập";
+      btnOpenLogin.onclick = (e) => {
+        e.preventDefault();
+        openLoginModal();
+      };
+    }
+  }
+
+  // Theo dõi trạng thái đăng nhập
+  onAuthStateChanged(auth, (user) => {
+    updateAuthUI(user);
+  });
+
+  // Xử lý đăng nhập bằng Google
+  if (googleBtn) {
+    googleBtn.addEventListener('click', async () => {
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        alert(`Chào mừng ${user.displayName} đã quay trở lại!`);
+        closeLoginModal();
+      } catch (error) {
+        console.error("Lỗi đăng nhập Google:", error);
+        alert("Đăng nhập thất bại!\nMã lỗi: " + error.code + "\nLời nhắn: " + error.message);
+      }
+    });
+  }
+
+  // Xử lý đăng nhập bằng Facebook
+  const facebookBtn = document.querySelector('.facebook-btn');
+  if (facebookBtn) {
+    facebookBtn.addEventListener('click', async () => {
+      try {
+        const result = await signInWithPopup(auth, facebookProvider);
+        const user = result.user;
+        alert(`Chào mừng ${user.displayName} đã đăng nhập bằng Facebook!`);
+        closeLoginModal();
+      } catch (error) {
+        console.error("Lỗi đăng nhập Facebook:", error);
+        alert("Đăng nhập Facebook thất bại!\nLưu ý: Bạn cần cấu hình App ID/Secret trong Firebase Console.\nLỗi: " + error.code);
+      }
+    });
+  }
+
+  // Hàm mở modal
+  function openLoginModal() {
+    loginModal.classList.add('show');
+    document.body.style.overflow = 'hidden'; // Ngăn cuộn trang nền
+  }
+
+  // Hàm đóng modal
+  function closeLoginModal() {
+    loginModal.classList.remove('show');
+    document.body.style.overflow = ''; // Cho phép cuộn trang lại
+  }
+
+  // Bắt sự kiện click (Nút login ban đầu)
+  btnOpenLogin.addEventListener('click', (e) => {
+    e.preventDefault(); 
+    if (!auth.currentUser) {
+      openLoginModal();
+    }
+  });
+
+  btnCloseLogin.addEventListener('click', closeLoginModal);
+
+  // Đóng khi click bên ngoài modal content
+  window.addEventListener('click', (e) => {
+    if (e.target === loginModal) {
+      closeLoginModal();
+    }
+  });
+
+  // Đóng bằng phím Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && loginModal.classList.contains('show')) {
+      closeLoginModal();
+    }
+  });
+
+  // Tạm thời ngăn form submit
+  const loginFormElement = document.getElementById('auth-login-form');
+  if (loginFormElement) {
+    loginFormElement.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Chức năng đăng nhập bằng Email đang được phát triển. Vui lòng sử dụng Google!');
+    });
+  }
+});

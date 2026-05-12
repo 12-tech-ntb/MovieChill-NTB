@@ -143,7 +143,7 @@
             </div>
             <div class="actions">
               <!-- Các nút hành động -->    
-                <button class="action-btn">Đăng Nhập</button>
+                <button id="btn-login-header" class="action-btn"><i class="fa-regular fa-user"></i> Đăng Nhập</button>
                 <button id="theme-toggle" class="theme-toggle-btn" title="Chuyển giao diện">
                   <span class="theme-icon">🌙</span>
                 </button>
@@ -473,6 +473,64 @@
         <p>Copyright &copy; 2026 NTB MovieChill. All rights reserved.</p>
       </div>
     </footer>
-      <script src="main.js"></script>
+      <script type="module" src="main.js"></script>
+    <!-- Theme Login -->
+     <div id="login-modal" class="login-modal">
+  <div class="login-modal-content">
+    <span class="login-close-btn">&times;</span>
+
+    <div class="login-columns-container">
+      <div class="login-column-left">
+        <img src="./ig/Login.png" alt="MovieChill Brand Poster" class="login-brand-img">
+      </div>
+
+      <div class="login-column-right">
+        <div class="login-form-container">
+          <h2 class="login-title">Đăng nhập</h2>
+          <p class="login-subtitle">Nếu bạn chưa có tài khoản, <a href="#" id="btn-goto-register-sub">đăng ký ngay</a></p>
+          
+          <form id="auth-login-form">
+            <div class="input-group">
+              <input type="text" id="login-username" placeholder="Email" required>
+            </div>
+            <div class="input-group">
+              <input type="password" id="login-pw" placeholder="Mật khẩu" required>
+            </div>
+            
+            <div class="form-options">
+              <label class="remember-me">
+                <input type="checkbox" id="remember-chk"> Nhớ tài khoản
+              </label>
+            </div>
+
+            <button type="submit" class="login-submit-btn">Đăng nhập</button>
+            
+            <div class="form-links">
+              <a href="#" class="forgot-pw-link" id="btn-goto-forgot">Quên mật khẩu?</a>
+            </div>
+
+            <div class="social-divider">
+              <span>ĐANG NHẬP BẰNG</span>
+            </div>
+
+            <div class="social-login-btns">
+              <button type="button" class="social-btn facebook-btn">
+                <i class="fa-brands fa-facebook-f"></i> Facebook
+              </button>
+              <button type="button" class="social-btn google-btn">
+                <i class="fa-brands fa-google"></i> Google
+              </button>
+            </div>
+
+            <div class="register-callout">
+              <p>BẠN CHƯA CÓ TÀI KHOẢN?</p>
+              <a href="#" class="register-now-link" id="btn-goto-register">ĐĂNG KÝ NGAY</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   </body>
 </html>
