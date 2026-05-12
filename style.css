@@ -488,6 +488,43 @@ nav {
   box-shadow: 5px 5px 5px rgba(255, 255, 255, 0.2); /* Hiệu ứng bóng khi hover */
 }
 
+/* Nút User khi đã đăng nhập */
+.user-logged-in-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important;
+  border: none !important;
+  padding: 5px 15px 5px 6px !important; /* Lùi lề trái để avatar sát lề hơn */
+  border-radius: 30px !important;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4) !important;
+  transition: all 0.3s ease !important;
+}
+
+.user-logged-in-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6) !important;
+  filter: brightness(1.1);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .menu1 ul li:hover {
   color: rgba(255, 255, 255, 0.652);
   /* transform: translateX(5px); Hiệu ứng nhích sang phải nhẹ khi hover */
@@ -2441,4 +2478,307 @@ body.light-mode header .search-container input {
 }
 body.light-mode header .search-container input::placeholder {
   color: rgba(255, 255, 255, 0.7);
+}
+
+/*---LOGIN MODAL----*/
+/* --- LOGIN MODAL (2 COLUMNS) --- */
+.login-modal {
+  display: none; /* Ẩn mặc định */
+  position: fixed;
+  z-index: 1001; /* Trên các element khác */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.85); /* Nền mờ tối hơn */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.login-modal.show {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+.login-modal-content {
+  background-color: #1a1d2e; /* Màu nền Navy đậm như RoPhim */
+  margin: 5% auto;
+  width: 80%;
+  max-width: 850px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.login-close-btn {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.login-close-btn:hover,
+.login-close-btn:focus {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.login-columns-container {
+  display: flex;
+  flex-direction: row; /* Hai cột song song */
+  width: 100%;
+  height: 100%;
+}
+
+/* Cột bên trái - Background ảnh phim + Logo căn giữa */
+.login-column-left {
+  flex: 0 0 45%; 
+  position: relative;
+  /* Lớp nền ảnh phim lót phía sau */
+  background: linear-gradient(rgba(26, 29, 46, 0.5), rgba(26, 29, 46, 0.8)), url('./ig/loginbg.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.login-brand-img {
+  width: 90%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+  transition: transform 0.3s ease;
+}
+
+.login-column-right {
+  flex: 0 0 55%; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 40px;
+  background-color: #1a1d2e;
+  color: #fff;
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 350px;
+}
+
+.login-title {
+  text-align: left;
+  margin-bottom: 8px;
+  font-size: 24px;
+  font-weight: 600;
+  text-transform: none;
+  color: #fff;
+}
+
+.login-subtitle {
+  text-align: left;
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 25px;
+}
+
+.login-subtitle a {
+  color: #fcd34d;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-subtitle a:hover {
+  text-decoration: underline;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 18px;
+  background-color: rgba(255, 255, 255, 0.03); 
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #fcd34d;
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #fcd34d; /* Màu vàng RoPhim */
+  border: none;
+  border-radius: 8px;
+  color: #1a1d2e; /* Chữ tối trên nền vàng */
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: none;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+.login-submit-btn:hover {
+  background-color: #fbbf24;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(252, 211, 77, 0.2);
+}
+
+.form-links {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.forgot-pw-link {
+  font-size: 13px;
+  color: #aaa;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.forgot-pw-link:hover {
+  color: var(--primary-color);
+}
+
+.social-divider {
+  text-align: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.social-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
+
+.social-divider span {
+  background-color: var(--card-bg); /* Màu nền trùng với modal */
+  padding: 0 10px;
+  font-size: 12px;
+  color: #888;
+  position: relative;
+  z-index: 2;
+}
+
+.social-login-btns {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.social-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: var(--transition);
+}
+
+.facebook-btn {
+  background-color: #3b5998;
+}
+
+.facebook-btn:hover {
+  background-color: #2d4373;
+}
+
+.google-btn {
+  background-color: #df4a32;
+}
+
+.google-btn:hover {
+  background-color: #c0392b;
+}
+
+.register-callout {
+  text-align: center;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.register-callout p {
+  margin-bottom: 5px;
+}
+
+.register-now-link {
+  color: var(--primary-color);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.register-now-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-columns-container {
+    flex-direction: column; /* Chuyển thành 1 cột trên mobile */
+  }
+  
+  .login-column-left {
+    display: none; /* Tạm ẩn ảnh thương hiệu trên mobile */
+  }
+  
+  .login-column-right {
+    flex: 0 0 100%;
+    padding: 30px 20px;
+  }
+  
+  .login-modal-content {
+    margin: 10% auto;
+    width: 90%;
+  }
 }
