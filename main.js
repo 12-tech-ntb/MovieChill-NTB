@@ -25,7 +25,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
-const facebookProvider = new FacebookAuthProvider();
+// const facebookProvider = new FacebookAuthProvider(); // Tạm khóa Facebook
 // --- 1. DỮ LIỆU PHIM HERO (Dùng cho slider) ---
   const heroMoviesData = [
     {
@@ -934,7 +934,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Xử lý đăng nhập bằng Facebook
+  /* Tạm khóa tính năng đăng nhập Facebook 
   const facebookBtn = document.querySelector('.facebook-btn');
   if (facebookBtn) {
     facebookBtn.addEventListener('click', async () => {
@@ -949,6 +949,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  */
 
   // Hàm mở modal
   function openLoginModal() {
