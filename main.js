@@ -11,15 +11,7 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCMqWIl6o9wFuPNWAUV_LDVgqpfToXsCQs", // Trả về q viết thường
-  authDomain: "moviechill-aef7b.firebaseapp.com",
-  projectId: "moviechill-aef7b",
-  storageBucket: "moviechill-aef7b.firebasestorage.app",
-  messagingSenderId: "310759265527",
-  appId: "1:310759265527:web:5ed6808773d5035f5caff2",
-  measurementId: "G-GS9SX2BVPF"
-};
+import { firebaseConfig } from "./firebase-config.js";
 
 // Khởi tạo Firebase
 const app = initializeApp(firebaseConfig);
