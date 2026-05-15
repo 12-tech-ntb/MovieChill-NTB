@@ -544,7 +544,7 @@ const googleProvider = new GoogleAuthProvider();
             btn.style.boxShadow = '0 0 5px rgba(255, 71, 87, 0.5)';
         }
 
-        btn.addEventListener('click', async function(e) {
+        btn.onclick = async function(e) {
           e.preventDefault();
           
           if (!window.auth || !window.auth.currentUser) {
@@ -572,7 +572,7 @@ const googleProvider = new GoogleAuthProvider();
             this.style.boxShadow = '1px 1px 1px 1px rgba(190, 190, 190, 0.678)';
             if (movie && typeof libToggleFavorite === 'function') await libToggleFavorite(movie, false);
           }
-        });
+        };
       }
     });
   }
