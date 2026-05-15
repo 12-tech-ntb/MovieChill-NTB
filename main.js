@@ -10,6 +10,9 @@ import {
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { 
+  getFirestore, doc, setDoc, deleteDoc, getDoc, collection, query, orderBy, getDocs, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCMqWIl6o9wFuPNWAUV_LDVgqpfToXsCQs",
@@ -24,6 +27,9 @@ const firebaseConfig = {
 // Khởi tạo Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
+window.auth = auth;
+window.db = db;
 const googleProvider = new GoogleAuthProvider();
 // const facebookProvider = new FacebookAuthProvider(); // Tạm khóa Facebook
 // --- 1. DỮ LIỆU PHIM HERO (Dùng cho slider) ---
@@ -222,6 +228,20 @@ const googleProvider = new GoogleAuthProvider();
 
   parentMenuItems.forEach(li => {
     li.addEventListener('click', (e) => {
+      const navItem = e.target.closest('.nav-action');
+      if (navItem) {
+          // Ngăn không cho nổi bọt lên li cha nếu click trực tiếp vào sub-menu item,
+          // vì ta sẽ xử lý click ở bên dưới.
+          // Hoặc có thể xử lý luôn tại đây:
+          e.preventDefault();
+          const apiUrl = navItem.getAttribute('data-api');
+          const title = navItem.getAttribute('data-title');
+          
+          if(apiUrl) {
+            loadSearchData(apiUrl, title);
+          }
+      }
+
       const subMenu = li.querySelector('.menu1');
       if (subMenu) {
         e.stopPropagation();
@@ -362,7 +382,9 @@ const googleProvider = new GoogleAuthProvider();
   function renderMovies(movies, container, domainImage) {
     if (!container) return;
     container.innerHTML = '';
+    window.currentMovies = window.currentMovies || {};
     movies.forEach(movie => {
+      window.currentMovies[movie.slug] = movie;
       const imgUrl = domainImage + movie.thumb_url;
       const card = document.createElement('div');
       card.className = 'movie-card';
@@ -379,7 +401,7 @@ const googleProvider = new GoogleAuthProvider();
             <div class="hover">
               <div class="action-buttons">
                 <button class="btn btn-play" onclick="playMovie('${movie.slug}')"><i class="fa-solid fa-play"></i>Xem Ngay</button>
-                <button class="btn btn-icon"><i class="fa-regular fa-heart"></i>Like</button>
+                <button class="btn btn-icon like-btn" data-slug="${movie.slug}"><i class="fa-regular fa-heart"></i>Like</button>
                 <button class="btn btn-icon two"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
               </div>
               <div class="data-card">
@@ -420,6 +442,8 @@ const googleProvider = new GoogleAuthProvider();
       const responseData = resData.data || resData;
       const movie = responseData.movie || responseData.item;
       if(videoTitle) videoTitle.textContent = movie.name;
+      window.currentPlayingMovie = movie;
+      if (typeof libAddWatched === 'function') libAddWatched(movie);
 
       const serverContainer = document.getElementById('server-container');
       const serverListEl = document.getElementById('server-list');
@@ -463,7 +487,11 @@ const googleProvider = new GoogleAuthProvider();
     // Mặc định phát tập đầu tiên của server này
     if (episodes.length > 0 && videoIframe) {
       videoIframe.src = episodes[0].link_embed;
-      if (videoTitle) videoTitle.textContent = movieName + " - " + (episodes[0].name.includes('Tập') ? episodes[0].name : 'Tập ' + episodes[0].name);
+      let epNameDef = episodes[0].name.includes('Tập') ? episodes[0].name : 'Tập ' + episodes[0].name;
+      if (videoTitle) videoTitle.textContent = movieName + " - " + epNameDef;
+      if (typeof libAddContinue === 'function' && window.currentPlayingMovie) {
+          libAddContinue(window.currentPlayingMovie, epNameDef);
+      }
     }
 
     episodes.forEach((ep, index) => {
@@ -482,6 +510,9 @@ const googleProvider = new GoogleAuthProvider();
          btn.classList.add('active');
          if(videoIframe) videoIframe.src = ep.link_embed;
          if(videoTitle) videoTitle.textContent = movieName + " - " + epName;
+         if (typeof libAddContinue === 'function' && window.currentPlayingMovie) {
+             libAddContinue(window.currentPlayingMovie, epName);
+         }
       });
       
       episodeList.appendChild(btn);
@@ -491,23 +522,55 @@ const googleProvider = new GoogleAuthProvider();
 
 
   // Cập nhật hàm Like
-  function updateLikeButtons(container) {
-    const likeBtns = container.querySelectorAll('.btn-icon');
+  async function updateLikeButtons(container) {
+    const likeBtns = container.querySelectorAll('.btn-icon.like-btn, .btn-icon:not(.two)');
+    
+    // Lấy trước danh sách favs từ Firestore nếu đã đăng nhập
+    let favSlugs = [];
+    if (window.auth && window.auth.currentUser && typeof libGet === 'function') {
+        const favs = await libGet('favorite');
+        favSlugs = favs.map(m => m.slug);
+    }
+
     likeBtns.forEach(btn => {
       if(btn.innerHTML.includes('fa-heart')) {
-        btn.addEventListener('click', function(e) {
+        const slug = btn.getAttribute('data-slug');
+        const icon = btn.querySelector('i');
+        
+        if (slug && favSlugs.includes(slug)) {
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+            icon.style.color = '#ff4757';
+            btn.style.boxShadow = '0 0 5px rgba(255, 71, 87, 0.5)';
+        }
+
+        btn.addEventListener('click', async function(e) {
           e.preventDefault();
-          const icon = this.querySelector('i');
+          
+          if (!window.auth || !window.auth.currentUser) {
+              alert('Vui lòng Đăng Nhập để thêm phim vào danh sách Yêu Thích!');
+              const loginModal = document.getElementById('login-modal');
+              if (loginModal) {
+                  loginModal.classList.add('show');
+                  document.body.style.overflow = 'hidden';
+              }
+              return;
+          }
+
+          const movie = (window.currentMovies && slug) ? window.currentMovies[slug] : null;
+          
           if (icon.classList.contains('fa-regular')) {
             icon.classList.remove('fa-regular');
             icon.classList.add('fa-solid');
             icon.style.color = '#ff4757';
             this.style.boxShadow = '0 0 5px rgba(255, 71, 87, 0.5)';
+            if (movie && typeof libToggleFavorite === 'function') await libToggleFavorite(movie, true);
           } else {
             icon.classList.add('fa-regular');
             icon.classList.remove('fa-solid');
             icon.style.color = 'inherit';
             this.style.boxShadow = '1px 1px 1px 1px rgba(190, 190, 190, 0.678)';
+            if (movie && typeof libToggleFavorite === 'function') await libToggleFavorite(movie, false);
           }
         });
       }
@@ -616,10 +679,12 @@ const googleProvider = new GoogleAuthProvider();
   }
 
 
-  // --- XỬ LÝ MENU NAVIGATION API (Dùng Event Delegation để bao quát cả phần mới thêm) ---
+  // --- XỬ LÝ MENU NAVIGATION API (Dùng Event Delegation) ---
+  // (Đã được chuyển một phần logic vào parentMenuItems ở trên để tránh lỗi stopPropagation)
   document.addEventListener('click', function(e) {
     const navItem = e.target.closest('.nav-action');
-    if (navItem) {
+    // Chỉ xử lý các nav-action không nằm trong menu cha có submenu (vì đã xử lý ở trên)
+    if (navItem && !navItem.closest('.nav-link > li')) {
       e.preventDefault();
       const apiUrl = navItem.getAttribute('data-api');
       const title = navItem.getAttribute('data-title');
@@ -651,6 +716,9 @@ const googleProvider = new GoogleAuthProvider();
       if(pushHistory) {
         history.pushState({ view: 'search', apiUrl: apiUrl, title: title }, '', '#search');
       }
+
+      const librarySection = document.getElementById('library-section');
+      if (librarySection) librarySection.style.display = 'none';
 
       if(mainHomeContent) mainHomeContent.style.display = 'none';
       if(searchResultsSection) searchResultsSection.style.display = 'block';
@@ -996,3 +1064,213 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// ==========================================
+// TÍNH NĂNG THƯ VIỆN PHIM (LIBRARY MODULE) - FIRESTORE
+// ==========================================
+
+window.libGet = async function(key) {
+    if (!window.auth || !window.auth.currentUser) return [];
+    const uid = window.auth.currentUser.uid;
+    const db = window.db;
+    
+    try {
+        const q = query(collection(db, 'users', uid, key), orderBy('timestamp', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const data = [];
+        querySnapshot.forEach((doc) => {
+            data.push(doc.data());
+        });
+        return data;
+    } catch (error) {
+        console.error("Lỗi lấy dữ liệu " + key + ":", error);
+        return [];
+    }
+}
+
+window.libToggleFavorite = async function(movie, isAdd) {
+    if (!window.auth || !window.auth.currentUser) return;
+    const uid = window.auth.currentUser.uid;
+    const db = window.db;
+    const docRef = doc(db, 'users', uid, 'favorite', movie.slug);
+
+    if (isAdd) {
+        await setDoc(docRef, {
+            ...movie,
+            timestamp: serverTimestamp()
+        });
+    } else {
+        await deleteDoc(docRef);
+    }
+    
+    // Nếu đang mở tab favorite thì render lại
+    const activeTab = document.querySelector('.lib-tab-btn.active');
+    if (activeTab && activeTab.getAttribute('data-tab') === 'favorite') {
+        renderLibrary('favorite');
+    }
+}
+
+window.libAddWatched = async function(movie) {
+    if (!window.auth || !window.auth.currentUser) return;
+    const uid = window.auth.currentUser.uid;
+    const db = window.db;
+    const docRef = doc(db, 'users', uid, 'watched', movie.slug);
+
+    await setDoc(docRef, {
+        ...movie,
+        timestamp: serverTimestamp()
+    });
+}
+
+window.libAddContinue = async function(movie, episodeName) {
+    if (!window.auth || !window.auth.currentUser) return;
+    const uid = window.auth.currentUser.uid;
+    const db = window.db;
+    const docRef = doc(db, 'users', uid, 'continue', movie.slug);
+
+    await setDoc(docRef, {
+        ...movie,
+        last_watched_ep: episodeName,
+        timestamp: serverTimestamp()
+    });
+}
+
+window.renderLibrary = async function(tabName) {
+    const container = document.getElementById('library-movie-list');
+    if (!container) return;
+    
+    if (!window.auth || !window.auth.currentUser) {
+        container.innerHTML = '<p style="color:#efb003; grid-column: 1 / -1; padding: 20px; font-weight:bold; font-size: 16px;"><i class="fa-solid fa-lock"></i> Vui lòng Đăng Nhập để xem Thư Viện của bạn.</p>';
+        return;
+    }
+
+    container.innerHTML = '<p style="color:#aaa; grid-column: 1 / -1; padding: 20px;">Đang tải dữ liệu từ Firestore...</p>';
+    
+    const data = await libGet(tabName);
+    
+    if (data.length === 0) {
+        container.innerHTML = '<p style="color:#aaa; grid-column: 1 / -1; padding: 20px; font-style:italic;">Chưa có phim nào trong danh sách này.</p>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    window.currentMovies = window.currentMovies || {};
+    
+    data.forEach(movie => {
+        window.currentMovies[movie.slug] = movie;
+        const imgUrl = movie.thumb_url.startsWith('http') ? movie.thumb_url : ('https://img.ophim.live/uploads/movies/' + movie.thumb_url);
+        
+        let badgeHtml = `<span class="episode">${movie.episode_current || 'Full'}</span>`;
+        if (tabName === 'continue' && movie.last_watched_ep) {
+            badgeHtml += `<div class="continue-badge">Đang xem: ${movie.last_watched_ep}</div>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'movie-card';
+        card.innerHTML = `
+        <div class="card-wrapper">
+          <div class="item-info">
+            <img class="bg-blur" src="${imgUrl}" alt="">
+            <img class="main-img" src="${imgUrl}" alt="${movie.name}">
+            ${badgeHtml}
+          </div>
+          <div class="card-info">
+            <h3 class="title-vn">${movie.name}</h3>
+            <p class="title-en">${movie.origin_name || ''}</p>
+            <div class="hover">
+              <div class="action-buttons">
+                <button class="btn btn-play" onclick="playMovie('${movie.slug}')"><i class="fa-solid fa-play"></i>Xem Ngay</button>
+                <button class="btn btn-icon like-btn" data-slug="${movie.slug}"><i class="fa-regular fa-heart"></i>Like</button>
+                <button class="btn btn-icon two"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
+              </div>
+              <div class="data-card">
+                <span class="tag solid">${(movie.country && movie.country[0]) ? movie.country[0].name : 'Thế Giới'}</span>
+                <span class="tag outline">${movie.year || '2026'}</span>
+                <span class="tag solid-brown">${movie.quality || 'HD'}</span>
+              </div>
+              <div class="Manufacturer">
+                <span style="color: #b3b3b3; font-size: 12px; font-weight: bold; letter-spacing: 2px;">NTB<span style="color: #efb003;"> MOVIECHILL</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        `;
+        
+        const imgElement = card.querySelector('.item-info img.main-img');
+        if(imgElement) {
+          imgElement.style.cursor = 'pointer';
+          imgElement.addEventListener('click', () => playMovie(movie.slug));
+        }
+        
+        container.appendChild(card);
+    });
+    
+    // Re-bind like buttons for these new cards
+    updateLikeButtons(container);
+}
+
+// Lắng nghe sự kiện click nút Thư Viện trên Nav
+document.addEventListener('DOMContentLoaded', () => {
+    const navLibraryBtn = document.getElementById('nav-library');
+    const librarySection = document.getElementById('library-section');
+    const mainHomeContent = document.getElementById('main-home-content');
+    const searchResultsSection = document.getElementById('search-results-section');
+    const tabBtns = document.querySelectorAll('.lib-tab-btn');
+
+    if (navLibraryBtn) {
+        navLibraryBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (mainHomeContent) mainHomeContent.style.display = 'none';
+            if (searchResultsSection) searchResultsSection.style.display = 'none';
+            if (librarySection) {
+                librarySection.style.display = 'block';
+                // Mặc định load tab Yêu Thích
+                document.querySelector('.lib-tab-btn[data-tab="favorite"]').click();
+            }
+            
+            // Xóa active ở các nav item khác
+            document.querySelectorAll('.nav-link li').forEach(li => li.classList.remove('active'));
+            navLibraryBtn.classList.add('active');
+            
+            // Đóng menu mobile nếu đang mở
+            const hamburger = document.getElementById('hamburger');
+            const navLink = document.querySelector('.nav-link');
+            if (hamburger && navLink) {
+                hamburger.classList.remove('toggle');
+                navLink.classList.remove('active');
+            }
+        });
+    }
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderLibrary(btn.getAttribute('data-tab'));
+        });
+    });
+    
+    // Tải lại library nếu đang mở khi user login/logout
+    import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js").then(({ onAuthStateChanged }) => {
+        if (window.auth) {
+            onAuthStateChanged(window.auth, (user) => {
+                const librarySection = document.getElementById('library-section');
+                if (librarySection && librarySection.style.display === 'block') {
+                    const activeTab = document.querySelector('.lib-tab-btn.active');
+                    if (activeTab) {
+                        renderLibrary(activeTab.getAttribute('data-tab'));
+                    }
+                }
+                
+                // Re-render tất cả nút Like trên trang chủ để update trạng thái
+                const allContainers = document.querySelectorAll('.movie-list');
+                allContainers.forEach(container => {
+                    if (container.id !== 'library-movie-list') {
+                        updateLikeButtons(container);
+                    }
+                });
+            });
+        }
+    });
+});
+
