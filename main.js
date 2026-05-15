@@ -564,13 +564,13 @@ const googleProvider = new GoogleAuthProvider();
             icon.classList.add('fa-solid');
             icon.style.color = '#ff4757';
             this.style.boxShadow = '0 0 5px rgba(255, 71, 87, 0.5)';
-            if (movie && typeof libToggleFavorite === 'function') await libToggleFavorite(movie, true);
+            if (movie && typeof window.libToggleFavorite === 'function') await window.libToggleFavorite(movie, true);
           } else {
             icon.classList.add('fa-regular');
             icon.classList.remove('fa-solid');
             icon.style.color = 'inherit';
             this.style.boxShadow = '1px 1px 1px 1px rgba(190, 190, 190, 0.678)';
-            if (movie && typeof libToggleFavorite === 'function') await libToggleFavorite(movie, false);
+            if (movie && typeof window.libToggleFavorite === 'function') await window.libToggleFavorite(movie, false);
           }
         };
       }
@@ -1095,8 +1095,10 @@ window.libToggleFavorite = async function(movie, isAdd) {
     const docRef = doc(db, 'users', uid, 'favorite', movie.slug);
 
     if (isAdd) {
+        // Loại bỏ các giá trị undefined có thể gây lỗi Firestore
+        const cleanMovie = JSON.parse(JSON.stringify(movie));
         await setDoc(docRef, {
-            ...movie,
+            ...cleanMovie,
             timestamp: serverTimestamp()
         });
     } else {
@@ -1116,8 +1118,9 @@ window.libAddWatched = async function(movie) {
     const db = window.db;
     const docRef = doc(db, 'users', uid, 'watched', movie.slug);
 
+    const cleanMovie = JSON.parse(JSON.stringify(movie));
     await setDoc(docRef, {
-        ...movie,
+        ...cleanMovie,
         timestamp: serverTimestamp()
     });
 }
@@ -1128,8 +1131,9 @@ window.libAddContinue = async function(movie, episodeName) {
     const db = window.db;
     const docRef = doc(db, 'users', uid, 'continue', movie.slug);
 
+    const cleanMovie = JSON.parse(JSON.stringify(movie));
     await setDoc(docRef, {
-        ...movie,
+        ...cleanMovie,
         last_watched_ep: episodeName,
         timestamp: serverTimestamp()
     });
