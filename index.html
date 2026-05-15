@@ -139,6 +139,7 @@
                 <li class="nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-bo" data-title="Phim Bộ Mới Nhất">Phim Bộ</li>
                 <li class="nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-le" data-title="Phim Lẻ Mới Nhất">Phim Lẻ</li>
                 <li class="nav-action" data-api="https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat" data-title="Phim 4K Mới">Phim 4K</li>
+                <li id="nav-library" style="color: #efb003;">Thư Viện <i class="fa-solid fa-bookmark" style="font-size: 12px; margin-left: 2px;"></i></li>
               </ul>
             </div>
             <div class="actions">
@@ -246,6 +247,21 @@
         <h2 style="color: #fff; margin-bottom: 20px;">Kết Quả Tìm Kiếm: <span id="search-keyword" style="color: #efb003;"></span></h2>
         <div class="movie-list grid-list" id="search-movie-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; overflow: visible; flex-wrap: wrap;">
           <!-- Phim tìm kiếm sẽ được đổ vào đây -->
+        </div>
+      </div>
+
+      <!-- Thư Viện Section -->
+      <div id="library-section" style="display: none; padding: 20px 40px; min-height: 50vh;">
+        <h2 style="color: #fff; margin-bottom: 20px;"><i class="fa-solid fa-bookmark" style="color: #efb003;"></i> Thư Viện Của Tôi</h2>
+        
+        <div class="library-tabs">
+          <button class="lib-tab-btn active" data-tab="favorite"><i class="fa-solid fa-heart"></i> Phim Yêu Thích</button>
+          <button class="lib-tab-btn" data-tab="watched"><i class="fa-solid fa-eye"></i> Phim Đã Xem</button>
+          <button class="lib-tab-btn" data-tab="continue"><i class="fa-solid fa-clock"></i> Tiếp Tục Xem</button>
+        </div>
+
+        <div class="movie-list grid-list" id="library-movie-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; overflow: visible; flex-wrap: wrap; margin-top: 20px;">
+          <!-- Phim thư viện sẽ được đổ vào đây -->
         </div>
       </div>
 
@@ -534,3 +550,4 @@
 </div>
   </body>
 </html>
+ <!-- Fix 404 -->
