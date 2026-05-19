@@ -262,9 +262,37 @@ const googleProvider = new GoogleAuthProvider();
   });
 
   // --- 6. TÍCH HỢP API OPHIM ---
-  const API_HOME = 'https://ophim1.com/v1/api/home';
-  const API_SEARCH = 'https://ophim1.com/v1/api/tim-kiem?keyword=';
-  const API_DETAIL = 'https://ophim1.com/v1/api/phim/';
+  const API_CONFIG = {
+    OPHIM: {
+      BASE_URL: 'https://ophim1.com/v1/api',
+      DETAIL_URL: 'https://ophim1.com/v1/api/phim/'
+    },
+    KKPHIM: {
+      BASE_URL: 'https://phimapi.com',
+      DETAIL_URL: 'https://phimapi.com/phim/'
+    }
+  };
+
+  const API_HOME = API_CONFIG.OPHIM.BASE_URL + '/home';
+  const API_SEARCH = API_CONFIG.OPHIM.BASE_URL + '/tim-kiem?keyword=';
+
+  // [Adapter Pattern] Chuẩn hóa dữ liệu từ nhiều nguồn API
+  function normalizeMovieData(source, rawData) {
+    let movieData = {};
+    let episodes = [];
+    
+    if (source === 'OPHIM') {
+      const data = rawData.data || rawData;
+      movieData = data.item || data.movie || {};
+      episodes = data.item?.episodes || data.movie?.episodes || data.episodes || [];
+    } else if (source === 'KKPHIM') {
+      movieData = rawData.movie || rawData.item || {};
+      episodes = rawData.episodes || movieData.episodes || [];
+    }
+    
+    movieData.name = movieData.name || movieData.title;
+    return { movie: movieData, episodes: episodes };
+  }
 
   // DOM Elements
   const list1 = document.getElementById('api-movie-list-1');
@@ -437,10 +465,45 @@ const googleProvider = new GoogleAuthProvider();
     hideSuggestions();
 
     try {
-      const response = await fetch(API_DETAIL + slug);
-      const resData = await response.json();
-      const responseData = resData.data || resData;
-      const movie = responseData.movie || responseData.item;
+      // Gọi cả 2 API cùng lúc để tiết kiệm thời gian
+      const pOphim = fetch(API_CONFIG.OPHIM.DETAIL_URL + slug).then(r => r.json()).catch(e => ({ error: true }));
+      const pKkphim = fetch(API_CONFIG.KKPHIM.DETAIL_URL + slug).then(r => r.json()).catch(e => ({ error: true }));
+
+      const [resOphim, resKkphim] = await Promise.all([pOphim, pKkphim]);
+
+      let finalMovie = null;
+      let allEpisodes = [];
+
+      // 1. Xử lý Server 1: OPhim
+      if (!resOphim.error && resOphim.status && (resOphim.status === true || resOphim.status === 'success')) {
+        const ophimData = normalizeMovieData('OPHIM', resOphim);
+        finalMovie = ophimData.movie;
+        ophimData.episodes.forEach(ep => {
+          // Gắn nhãn để phân biệt
+          ep.server_name = `OPhim - ${ep.server_name}`;
+          allEpisodes.push(ep);
+        });
+      }
+
+      // 2. Xử lý Server 2: KKPhim
+      if (!resKkphim.error && resKkphim.status && (resKkphim.status === true || resKkphim.status === 'success')) {
+        const kkphimData = normalizeMovieData('KKPHIM', resKkphim);
+        if (!finalMovie) finalMovie = kkphimData.movie; // Dùng info từ KKPhim nếu OPhim chết
+        kkphimData.episodes.forEach(ep => {
+          ep.server_name = `KKPhim - ${ep.server_name.replace('#', '')}`;
+          allEpisodes.push(ep);
+        });
+      }
+
+      if (!finalMovie || allEpisodes.length === 0) {
+        if(videoTitle) videoTitle.textContent = "Lỗi: Không tìm thấy bộ phim ở cả 2 Server.";
+        return;
+      }
+
+      // Gán cục dữ liệu đã gộp trở lại cấu trúc cũ để UI tự render
+      finalMovie.episodes = allEpisodes;
+      const movie = finalMovie;
+
       if(videoTitle) videoTitle.textContent = movie.name;
       window.currentPlayingMovie = movie;
       if (typeof libAddWatched === 'function') libAddWatched(movie);
