@@ -142,6 +142,7 @@
                 <li id="nav-library" style="color: #efb003;">Thư Viện <i class="fa-solid fa-bookmark" style="font-size: 12px; margin-left: 2px;"></i></li>
                 <li class="nav-actions-container">
                   <div class="actions">
+                    <button id="btn-donate-header" class="action-btn donate-btn" title="Ủng hộ Admin"><i class="fa-solid fa-gift"></i> Donate</button>
                     <button id="btn-login-header" class="action-btn"><i class="fa-regular fa-user"></i> Đăng Nhập</button>
                     <button id="theme-toggle" class="theme-toggle-btn" title="Chuyển giao diện">
                       <span class="theme-icon">🌙</span>
@@ -174,22 +175,8 @@
               <span class="play-icon">&#9658;</span> </div>
             </div>
           </div>
-          <div class="hero-thumbnails">
-            <div class="thumb-item active">
-              <img src="./ig/a1.jpg" alt="phim 1">
-            </div>
-            <div class="thumb-item">
-              <img src="./ig/Homtown.jpg" alt="phim 2">
-            </div>
-            <div class="thumb-item">
-              <img src="./ig/Taxi3.jpg" alt="phim 3">
-            </div>
-            <div class="thumb-item">
-              <img src="./ig/a4.jpg" alt="phim 4">
-            </div>
-            <div class="thumb-item">
-              <img src="./ig/a5.jpg" alt="phim 5">
-            </div>
+          <div class="hero-thumbnails" id="hero-thumbnails-container">
+            <!-- Thumbnails sẽ được render tự động qua JavaScript (fetchHeroMovies) -->
           </div>
           <div class="hero-movie-type">
             <h2 class="hero-movie-title">Các thể loại phim hot</h2>
@@ -547,7 +534,46 @@
       </div>
     </div>
   </div>
+  </div>
 </div>
+
+<!-- Donate Modal -->
+<div class="modal-overlay" id="donate-modal">
+  <div class="modal-container donate-container">
+    <button class="close-modal-btn" id="close-donate-btn"><i class="fa-solid fa-xmark"></i></button>
+    
+    <div class="donate-header">
+      <div class="gift-icon-container">
+        <i class="fa-solid fa-gift"></i>
+      </div>
+      <h2>Donate For Admin 🍿</h2>
+      <p>Cảm ơn bạn đã đồng hành cùng MovieChill! Mọi sự đóng góp đều giúp chúng mình duy trì máy chủ và phát triển thêm tính năng.</p>
+    </div>
+
+    <div class="donate-body">
+      <div class="qr-box">
+        <!-- Sử dụng VietQR demo (Có thể thay thế STK sau) -->
+        <img src="./ig/bank.jpg" alt="Donate QR Code" class="qr-code-img">
+      </div>
+      
+      <div class="bank-info">
+        <div class="info-row">
+          <span class="info-label">Ngân hàng:</span>
+          <span class="info-value">MB Bank</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Số tài khoản:</span>
+          <span class="info-value copyable">9661222006 <i class="fa-regular fa-copy" title="Copy"></i></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Chủ tài khoản:</span>
+          <span class="info-value">NGUYEN TAT BAC</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
   </body>
 </html>
  <!-- Fix 404 -->
