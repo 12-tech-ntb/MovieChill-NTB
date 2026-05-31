@@ -32,116 +32,122 @@ window.auth = auth;
 window.db = db;
 const googleProvider = new GoogleAuthProvider();
 // const facebookProvider = new FacebookAuthProvider(); // Tạm khóa Facebook
-// --- 1. DỮ LIỆU PHIM HERO (Dùng cho slider) ---
-  const heroMoviesData = [
-    {
-      img: './ig/a1.jpg',
-      title: 'Can This Love Be Translated ?',
-      sub: 'MovieChill',
-      rating: '⭐9.9', years: '2026', quality: '4K', episode: 'Full',
-      types: ['Tình Cảm', 'Ngôn Tình', 'Chill'],
-      desc: 'Đi khắp thế giới để quay chương trình truyền hình, cảm xúc của một người nổi tiếng và phiên dịch viên của cô lại chẳng thể nào thông dịch.',
-      slug: 'tieng-yeu-nay-anh-dich-duoc-khong' // Link chuẩn từ API OPhim
-    },
-    {
-      img: './ig/Homtown.jpg',
-      title: 'Điệu Cha Cha Cha Làng Biển',
-      sub: 'Hometown Cha-Cha-Cha',
-      rating: '⭐9.5', years: '2021', quality: 'FHD', episode: 'Tập 16',
-      types: ['Hài Hước', 'Lãng Mạn', 'Đời Thường'],
-      desc: 'Một nha sĩ từ thành phố chuyển đến một ngôi làng ven biển và mở phòng khám, tại đây cô gặp gỡ một chàng trai kỳ lạ luôn nhiệt tình giúp đỡ mọi người.',
-      slug: 'dieu-cha-cha-cha-lang-bien'
-    },
-    {
-      img: './ig/Taxi3.jpg',
-      title: 'Tài Xế Taxi 3',
-      sub: 'Taxi Driver 3',
-      rating: '⭐9.8', years: '2025', quality: '4K', episode: 'Trailer',
-      types: ['Hành Động', 'Tội Phạm', 'Bí Ẩn'],
-      desc: 'Kim Do Gi và đội ngũ Rainbow Taxi tiếp tục hành trình thực thi công lý thay cho những người yếu thế trong xã hội bằng những chuyến xe báo thù đẫm máu.',
-      slug: 'an-danh' // Taxi Driver 1
-    },
-    {
-      img: './ig/TheK2.jpg',
-      title: 'Mật Danh K2',
-      sub: 'The K2',
-      rating: '⭐9.2', years: '2016', quality: 'FHD', episode: 'Full',
-      types: ['Hành Động', 'Chính Trị', 'Kịch Tính'],
-      desc: 'Một cựu lính đánh thuê được thuê làm vệ sĩ cho vợ của một ứng cử viên tổng thống, vô tình vướng vào những âm mưu chính trị và tình yêu phức tạp.',
-      slug: 'mat-danh-k2'
-    },
-    {
-      img: './ig/a5.jpg',
-      title: 'Trò Chơi Thao Túng',
-      sub: 'The Manipulated',
-      rating: '⭐9.4', years: '2025', quality: '4K', episode: 'Tập 5',
-      types: ['Tâm Lý', 'Kinh Dị', 'Giật Gân'],
-      desc: 'Những vòng lặp tâm lý gay cấn và các bí mật kinh hoàng được vén màn trong một trò chơi sinh tử không lối thoát, nơi lòng tin là thứ xa xỉ nhất.',
-      slug: 'tro-choi-thao-tung' // Link chuẩn từ API
-    }
-  ];
+  // --- 1. DỮ LIỆU PHIM HERO (Dùng cho slider) ---
+  let heroMoviesData = [];
+  let currentHeroSlug = '';
 
-  // Lưu trữ slug của phim đang hiển thị trên Hero
-  let currentHeroSlug = heroMoviesData[0].slug;
-
-  // Các DOM element của Hero Section
   const header = document.querySelector('header');
   const heroTitle = document.querySelector('.movie-title');
   const heroSub = document.querySelector('.movie-sub');
   const heroDesc = document.querySelector('.movie-desc');
   const heroTags = document.querySelectorAll('.movie-info .badge');
   const heroTypes = document.querySelector('.movie-type');
-  const thumbs = document.querySelectorAll('.thumb-item');
+  const thumbsContainer = document.getElementById('hero-thumbnails-container');
 
-  // Gắn transition cho text để đổi mượt hơn
-  heroTitle.style.transition = 'opacity 0.3s ease';
-  heroDesc.style.transition = 'opacity 0.3s ease';
+  if(heroTitle) heroTitle.style.transition = 'opacity 0.3s ease';
+  if(heroDesc) heroDesc.style.transition = 'opacity 0.3s ease';
 
-  // Xử lý Click Thumbnail
-  thumbs.forEach((item, index) => {
-    item.addEventListener('click', function() {
-      // Đổi class active
-      document.querySelector('.thumb-item.active')?.classList.remove('active');
-      this.classList.add('active');
+  // Hàm click đổi phim trên Hero Banner
+  window.handleThumbClick = function(index) {
+    if (!thumbsContainer) return;
+    document.querySelector('.thumb-item.active')?.classList.remove('active');
+    const allThumbs = thumbsContainer.querySelectorAll('.thumb-item');
+    if (allThumbs[index]) allThumbs[index].classList.add('active');
 
-      // Cập nhật dữ liệu từ mảng
-      const data = heroMoviesData[index];
-      currentHeroSlug = data.slug;
+    const data = heroMoviesData[index];
+    if (!data) return;
+    
+    currentHeroSlug = data.slug;
+    
+    if(window.innerWidth > 768) {
+       header.style.backgroundImage = `linear-gradient(to right, rgba(0, 0, 0, 0.9) 10%, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0) 100%), url('${data.img}')`;
+    } else {
+       header.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.6) 60%, #242424 85%, #242424 100%), url('${data.img}')`;
+    }
+
+    if(heroTitle) heroTitle.style.opacity = 0;
+    if(heroDesc) heroDesc.style.opacity = 0;
+    
+    setTimeout(() => {
+      if(heroTitle) heroTitle.textContent = data.title;
+      if(heroSub) heroSub.textContent = data.sub;
+      if(heroDesc) heroDesc.textContent = data.desc;
       
-      // Update background với gradient
-      if(window.innerWidth > 768) {
-         header.style.backgroundImage = `linear-gradient(to right, rgba(0, 0, 0, 0.9) 10%, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0) 100%), url('${data.img}')`;
-      } else {
-         header.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.6) 60%, #242424 85%, #242424 100%), url('${data.img}')`;
+      if(heroTags && heroTags.length >= 4) {
+        heroTags[0].textContent = data.rating;
+        heroTags[1].textContent = data.years;
+        heroTags[2].textContent = data.quality;
+        heroTags[3].textContent = data.episode;
       }
 
-      // Thêm hiệu ứng mờ dần khi đổi text
-      heroTitle.style.opacity = 0;
-      heroDesc.style.opacity = 0;
-      
-      setTimeout(() => {
-        heroTitle.textContent = data.title;
-        heroSub.textContent = data.sub;
-        heroDesc.textContent = data.desc;
-        
-        // Update tags
-        if(heroTags.length >= 4) {
-          heroTags[0].textContent = data.rating;
-          heroTags[1].textContent = data.years;
-          heroTags[2].textContent = data.quality;
-          heroTags[3].textContent = data.episode;
-        }
+      if(heroTypes) {
+        heroTypes.innerHTML = data.types.map(t => `<span class="type">${t}</span>`).join('\n              ');
+      }
 
-        // Update types
-        if(heroTypes) {
-          heroTypes.innerHTML = data.types.map(t => `<span class="type">${t}</span>`).join('\n              ');
-        }
+      if(heroTitle) heroTitle.style.opacity = 1;
+      if(heroDesc) heroDesc.style.opacity = 1;
+    }, 300);
+  }
 
-        heroTitle.style.opacity = 1;
-        heroDesc.style.opacity = 1;
-      }, 300);
-    });
-  });
+  // Lấy dữ liệu 5 phim mới từ API
+  async function fetchHeroMovies() {
+    try {
+      const res = await fetch('https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=1');
+      const data = await res.json();
+      const top5 = data.data.items.slice(0, 5);
+      const domainImg = data.data.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/';
+
+      // Fetch song song chi tiết 5 phim
+      const detailPromises = top5.map(m => fetch('https://ophim1.com/v1/api/phim/' + m.slug).then(r => r.json()));
+      const details = await Promise.all(detailPromises);
+
+      heroMoviesData = details.map((detailRes, index) => {
+         const movieInfo = detailRes.data ? (detailRes.data.item || detailRes.data.movie) : top5[index];
+         
+         let cleanDesc = movieInfo.content || movieInfo.origin_name || '';
+         // Bỏ HTML tags
+         let tempDiv = document.createElement("div");
+         tempDiv.innerHTML = cleanDesc;
+         cleanDesc = tempDiv.textContent || tempDiv.innerText || "";
+         if (cleanDesc.length > 200) cleanDesc = cleanDesc.substring(0, 200) + '...';
+
+         return {
+           img: domainImg + (movieInfo.poster_url || movieInfo.thumb_url || top5[index].poster_url),
+           thumb: domainImg + (movieInfo.thumb_url || top5[index].thumb_url),
+           title: movieInfo.name,
+           sub: movieInfo.origin_name || 'MovieChill',
+           rating: 'Mới',
+           years: movieInfo.year || '2026',
+           quality: movieInfo.quality || 'HD',
+           episode: movieInfo.episode_current || 'Full',
+           types: movieInfo.category ? movieInfo.category.slice(0, 3).map(c => c.name || c.title) : ['Hot'],
+           desc: cleanDesc,
+           slug: movieInfo.slug
+         };
+      });
+
+      // Vẽ các thumbnail
+      if (thumbsContainer) {
+        thumbsContainer.innerHTML = '';
+        heroMoviesData.forEach((movie, index) => {
+          const div = document.createElement('div');
+          div.className = 'thumb-item' + (index === 0 ? ' active' : '');
+          div.innerHTML = `<img src="${movie.thumb}" alt="${movie.title}">`;
+          div.addEventListener('click', () => window.handleThumbClick(index));
+          thumbsContainer.appendChild(div);
+        });
+      }
+
+      // Kích hoạt banner đầu tiên
+      if (heroMoviesData.length > 0) {
+        window.handleThumbClick(0);
+      }
+    } catch (error) {
+      console.error("Lỗi khi load Hero Banner:", error);
+    }
+  }
+
+  fetchHeroMovies();
 
   // Gắn sự kiện Click cho nút Play ở Hero Banner
   const heroPlayBtn = document.querySelector('.play-btn');
@@ -1339,5 +1345,47 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    // --- XỬ LÝ NÚT DONATE ---
+    const btnDonate = document.getElementById('btn-donate-header');
+    const donateModal = document.getElementById('donate-modal');
+    const closeDonateBtn = document.getElementById('close-donate-btn');
+
+    if (btnDonate && donateModal) {
+        btnDonate.addEventListener('click', () => {
+            donateModal.classList.add('active');
+        });
+    }
+
+    if (closeDonateBtn && donateModal) {
+        closeDonateBtn.addEventListener('click', () => {
+            donateModal.classList.remove('active');
+        });
+    }
+
+    // Đóng donate khi click ngoài modal
+    if (donateModal) {
+        window.addEventListener('click', (e) => {
+            if (e.target === donateModal) {
+                donateModal.classList.remove('active');
+            }
+        });
+    }
+
+    // Copy STK
+    const copyableElems = document.querySelectorAll('.info-value.copyable');
+    copyableElems.forEach(elem => {
+        elem.addEventListener('click', function() {
+            const textToCopy = this.textContent.trim().replace(' Copy', '');
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalHTML = this.innerHTML;
+                this.innerHTML = `${textToCopy} <i class="fa-solid fa-check" style="color: #4ade80;"></i>`;
+                setTimeout(() => {
+                    this.innerHTML = originalHTML;
+                }, 2000);
+            });
+        });
+    });
+
 });
 
