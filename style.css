@@ -3384,4 +3384,40 @@ body.light-mode .suggest-meta {
   .info-tags {
     justify-content: center;
   }
+}
+
+/* Delete Button on Library Movie Card */
+.delete-movie-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ef4444;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(8px);
+  opacity: 0; /* Ẩn đi mặc định */
+  transform: translateY(10px); /* Kéo xuống một chút để làm hiệu ứng trượt lên */
+}
+
+/* Hiện nút xóa khi di chuột vào khối ảnh */
+.item-info:hover .delete-movie-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.delete-movie-btn:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+  transform: scale(1.15) rotate(5deg);
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.5);
 }

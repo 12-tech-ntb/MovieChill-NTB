@@ -1296,6 +1296,20 @@ window.libAddContinue = async function(movie, episodeName) {
     });
 }
 
+window.libRemoveMovie = async function(collectionName, slug) {
+    if (!window.auth || !window.auth.currentUser) return;
+    const uid = window.auth.currentUser.uid;
+    const db = window.db;
+    try {
+        const docRef = doc(db, 'users', uid, collectionName, slug);
+        await deleteDoc(docRef);
+        // Cập nhật lại giao diện ngay sau khi xóa
+        renderLibrary(collectionName);
+    } catch (error) {
+        console.error("Lỗi khi xóa phim:", error);
+    }
+}
+
 window.renderLibrary = async function(tabName) {
     const container = document.getElementById('library-movie-list');
     if (!container) return;
@@ -1326,6 +1340,11 @@ window.renderLibrary = async function(tabName) {
             badgeHtml += `<div class="continue-badge">Đang xem: ${movie.last_watched_ep}</div>`;
         }
 
+        let deleteBtnHtml = '';
+        if (tabName === 'watched' || tabName === 'continue') {
+            deleteBtnHtml = `<button class="delete-movie-btn" onclick="event.stopPropagation(); libRemoveMovie('${tabName}', '${movie.slug}')" title="Xóa khỏi danh sách"><i class="fa-solid fa-trash"></i></button>`;
+        }
+
         const card = document.createElement('div');
         card.className = 'movie-card';
         card.innerHTML = `
@@ -1334,6 +1353,7 @@ window.renderLibrary = async function(tabName) {
             <img class="bg-blur" src="${imgUrl}" alt="">
             <img class="main-img" src="${imgUrl}" alt="${movie.name}">
             ${badgeHtml}
+            ${deleteBtnHtml}
           </div>
           <div class="card-info">
             <h3 class="title-vn">${movie.name}</h3>
