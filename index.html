@@ -408,9 +408,40 @@
       <div id="video-modal" class="video-modal">
         <div class="video-modal-content">
           <span class="video-close-btn">&times;</span>
-          <h3 id="video-title" style="color: white; margin-bottom: 10px;">Đang tải...</h3>
-          <div class="iframe-container">
+          <div class="video-header-flex">
+            <h3 id="video-title" style="color: white; margin: 0;">Đang tải...</h3>
+            <button id="btn-movie-info" class="btn-movie-info" title="Thông tin phim"><i class="fa-solid fa-circle-info"></i> Thông tin</button>
+          </div>
+          <div class="iframe-container" style="position: relative;">
             <iframe id="video-iframe" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            
+            <!-- Thông tin phim đè lên video -->
+            <div id="movie-info-panel" class="movie-info-panel">
+              <button id="close-info-btn" class="close-info-btn">&times;</button>
+              <div class="info-panel-content">
+                <img id="info-poster" src="" alt="Poster" class="info-poster">
+                <div class="info-details">
+                  <h2 id="info-title-vn">Tên Phim</h2>
+                  <p id="info-title-en" class="info-sub">Original Name (2026)</p>
+                  
+                  <div class="info-tags">
+                    <span id="info-quality" class="tag solid">FHD</span>
+                    <span id="info-time" class="tag outline">N/A</span>
+                    <span id="info-country" class="tag outline">Quốc tế</span>
+                  </div>
+                  
+                  <div class="info-meta">
+                    <p><strong>Đạo diễn:</strong> <span id="info-director">Đang cập nhật...</span></p>
+                    <p><strong>Diễn viên:</strong> <span id="info-actors">Đang cập nhật...</span></p>
+                  </div>
+                  
+                  <div class="info-desc">
+                    <p id="info-content">Nội dung phim đang được cập nhật...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End Thông tin phim -->
           </div>
           <div class="server-container" id="server-container" style="display:none;">
             <h4><i class="fa-solid fa-layer-group"></i> Phiên bản ngôn ngữ:</h4>

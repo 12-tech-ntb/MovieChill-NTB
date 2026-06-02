@@ -281,7 +281,6 @@ const googleProvider = new GoogleAuthProvider();
 
   const API_HOME = API_CONFIG.OPHIM.BASE_URL + '/home';
   const API_SEARCH = API_CONFIG.OPHIM.BASE_URL + '/tim-kiem?keyword=';
-
   // [Adapter Pattern] Chuẩn hóa dữ liệu từ nhiều nguồn API
   function normalizeMovieData(source, rawData) {
     let movieData = {};
@@ -319,6 +318,78 @@ const googleProvider = new GoogleAuthProvider();
     videoCloseBtn.addEventListener('click', () => {
       videoModal.classList.remove('show');
       videoIframe.src = ''; // Dừng phát video
+    });
+  }
+
+  // Logic cho Information Movie Panel
+  const btnMovieInfo = document.getElementById('btn-movie-info');
+  const movieInfoPanel = document.getElementById('movie-info-panel');
+  const closeInfoBtn = document.getElementById('close-info-btn');
+
+  window.renderMovieInfo = function() {
+    if (window.currentPlayingMovie) {
+        const m = window.currentPlayingMovie;
+        
+        // Poster
+        const posterEl = document.getElementById('info-poster');
+        if (posterEl) {
+          const imgUrl = m.poster_url ? (m.poster_url.startsWith('http') ? m.poster_url : 'https://img.ophim.live/uploads/movies/' + m.poster_url) : (m.thumb_url ? 'https://img.ophim.live/uploads/movies/' + m.thumb_url : '');
+          posterEl.src = imgUrl;
+        }
+
+        // Texts
+        const titleVn = document.getElementById('info-title-vn');
+        if (titleVn) titleVn.textContent = m.name || 'Đang cập nhật...';
+
+        const titleEn = document.getElementById('info-title-en');
+        if (titleEn) titleEn.textContent = `${m.origin_name || ''} (${m.year || '2026'})`;
+
+        const qlt = document.getElementById('info-quality');
+        if (qlt) qlt.textContent = m.quality || m.episode_current || 'FHD';
+
+        const tim = document.getElementById('info-time');
+        if (tim) tim.textContent = m.time || 'N/A';
+
+        const ctry = document.getElementById('info-country');
+        if (ctry) {
+           ctry.textContent = (m.country && m.country.length > 0) ? m.country[0].name : 'Quốc tế';
+        }
+
+        const dir = document.getElementById('info-director');
+        if (dir) {
+           dir.textContent = (m.director && m.director.length > 0) ? m.director.join(', ') : 'Đang cập nhật...';
+        }
+
+        const act = document.getElementById('info-actors');
+        if (act) {
+           act.textContent = (m.actor && m.actor.length > 0) ? m.actor.join(', ') : 'Đang cập nhật...';
+           act.className = '';
+        }
+
+        const contentEl = document.getElementById('info-content');
+        if (contentEl) {
+           // Loại bỏ các thẻ HTML nguy hiểm hoặc không cần thiết từ content
+           let cleanContent = m.content ? m.content.replace(/<[^>]*>?/gm, '') : 'Nội dung phim đang được cập nhật...';
+           contentEl.textContent = cleanContent;
+        }
+    }
+  };
+
+  if (btnMovieInfo && movieInfoPanel) {
+    btnMovieInfo.addEventListener('click', () => {
+      // Bật/tắt panel
+      movieInfoPanel.classList.toggle('active');
+      
+      // Nếu bật, hãy render dữ liệu
+      if (movieInfoPanel.classList.contains('active')) {
+        window.renderMovieInfo();
+      }
+    });
+  }
+
+  if (closeInfoBtn && movieInfoPanel) {
+    closeInfoBtn.addEventListener('click', () => {
+      movieInfoPanel.classList.remove('active');
     });
   }
 
@@ -436,7 +507,7 @@ const googleProvider = new GoogleAuthProvider();
               <div class="action-buttons">
                 <button class="btn btn-play" onclick="playMovie('${movie.slug}')"><i class="fa-solid fa-play"></i>Xem Ngay</button>
                 <button class="btn btn-icon like-btn" data-slug="${movie.slug}"><i class="fa-regular fa-heart"></i>Like</button>
-                <button class="btn btn-icon two"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
+                <button class="btn btn-icon two" onclick="playMovie('${movie.slug}', true)"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
               </div>
               <div class="data-card">
                 <span class="tag solid">${movie.country && movie.country[0] ? movie.country[0].name : 'Thế Giới'}</span>
@@ -463,7 +534,7 @@ const googleProvider = new GoogleAuthProvider();
   }
 
   // Xem phim (Phát Video)
-  window.playMovie = async function(slug) {
+  window.playMovie = async function(slug, autoOpenInfo = false) {
     if(videoTitle) videoTitle.textContent = "Đang tải...";
     if(episodeList) episodeList.innerHTML = ""; // Xóa danh sách tập cũ
     if(videoModal) videoModal.classList.add('show');
@@ -542,6 +613,23 @@ const googleProvider = new GoogleAuthProvider();
       } else {
         if(videoTitle) videoTitle.textContent = "Lỗi: Không tìm thấy tập phim để phát.";
       }
+
+      // Cập nhật hoặc mở Info Panel
+      const movieInfoPanel = document.getElementById('movie-info-panel');
+      if (autoOpenInfo) {
+        if (movieInfoPanel) {
+           movieInfoPanel.classList.add('active');
+           if(typeof window.renderMovieInfo === 'function') window.renderMovieInfo();
+        }
+      } else {
+        // Nếu panel ĐANG mở sẵn (do user mở rồi chọn tập khác), thì render lại với data mới
+        if (movieInfoPanel && movieInfoPanel.classList.contains('active')) {
+           if(typeof window.renderMovieInfo === 'function') window.renderMovieInfo();
+        } else {
+           if (movieInfoPanel) movieInfoPanel.classList.remove('active');
+        }
+      }
+
     } catch (error) {
       console.error("Lỗi khi lấy link phim:", error);
       if(videoTitle) videoTitle.textContent = "Lỗi tải phim.";
@@ -1254,7 +1342,7 @@ window.renderLibrary = async function(tabName) {
               <div class="action-buttons">
                 <button class="btn btn-play" onclick="playMovie('${movie.slug}')"><i class="fa-solid fa-play"></i>Xem Ngay</button>
                 <button class="btn btn-icon like-btn" data-slug="${movie.slug}"><i class="fa-regular fa-heart"></i>Like</button>
-                <button class="btn btn-icon two"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
+                <button class="btn btn-icon two" onclick="playMovie('${movie.slug}', true)"><i class="fa-solid fa-circle-info"></i>Chi Tiết</button>
               </div>
               <div class="data-card">
                 <span class="tag solid">${(movie.country && movie.country[0]) ? movie.country[0].name : 'Thế Giới'}</span>
