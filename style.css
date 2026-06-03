@@ -4,6 +4,11 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 /* --- CSS CHO PC (Mặc định) --- */
 .hamburger {
   display: none; /* Ẩn trên máy tính */
@@ -39,7 +44,30 @@
     height: auto !important;
     min-height: 100vh !important;
     padding-bottom: 30px;
-    background-attachment: fixed !important;
+    background-attachment: scroll !important;
+    isolation: isolate; /* Cho phép dùng z-index âm bên trong mà không lọt ra ngoài */
+    position: relative;
+    z-index: 999; /* Đảm bảo thanh menu bên trong không bị các khối phim ở dưới đè lên */
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: -2;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: inherit;
+    background-size: cover, auto 460px !important; /* Tăng chiều cao ảnh lên 460px để bao trọn chữ và nút Play */
+    background-position: center, center 80px !important; /* Đẩy ảnh xuống giữa khoảng trống Nav và Thumbnails */
+    background-repeat: no-repeat !important;
+    z-index: -1;
   }
 
   /* 2. NAVBAR: ÉP LOGO - SEARCH - 3 GẠCH TRÊN 1 HÀNG */
@@ -214,11 +242,16 @@
   /* 5. NỘI DUNG HERO */
   .hero-container {
     width: 100% !important;
-    padding: 15px !important;
+    padding: 90px 15px 15px 15px !important; /* Dịch nội dung xuống dưới thanh nav */
+    justify-content: flex-start !important; /* Không căn giữa dọc nữa để tránh tràn lên trên */
+    height: auto !important;
+    position: relative;
+    z-index: 1;
   }
   .hero-content {
     min-width: unset !important;
     width: 100% !important;
+    min-height: 310px !important; /* Giữ chiều cao cố định để không đẩy khối dưới nhảy lên nhảy xuống */
   }
 
   /* 6. THUMBNAILS (CĂN ĐỀU 2 BÊN, KHÔNG BÁM LỀ) */
@@ -299,7 +332,13 @@
     padding-bottom: 110px !important; /* Tạo không gian bên dưới để Hover Card mở rộng không bị cắt */
     margin-bottom: -90px !important;  /* Ghi đè margin-bottom âm từ bản PC để căn chỉnh khoảng cách vừa vặn */
     padding-right: 15px !important;
+    margin-left: -15px !important; /* Kéo khung trượt sát ra tận mép viền màn hình bên trái */
+    padding-left: 25px !important; /* Đẩy khối phim vào trong 25px để tạo không gian an toàn tuyệt đối bên trái */
     -webkit-overflow-scrolling: touch;
+  }
+
+  .country-section .movie-list {
+    padding: 0 0 180px 0 !important; 
   }
 
   .movie-list::-webkit-scrollbar {
@@ -311,6 +350,7 @@
     width: 170px !important; /* Kích thước chiều ngang vừa phải cho Mobile */
     height: 250px !important; /* Chiều cao đủ lớn để chứa cả ảnh và chữ */
     scroll-snap-align: start;
+    margin-top: 40px !important; /* Tạo khoảng trống bằng margin để thẻ phóng to không bị padding clip cắt ngang */
   }
 
   .item-info {
@@ -465,6 +505,7 @@ body {
 }
 
 header {
+  position: relative;
   background-size: cover;
   background-position: center;
   height: 100%;
@@ -995,11 +1036,10 @@ nav {
 .domain-link {
   color: #fff;
   font-family: "Inter", sans-serif;
-  padding: 5px 30px 30px 30px;
   width: 95%;
   height: 50px;
   border: 1px solid gray;
-  margin: 0px 30px 0px 30px;
+  margin: 10px auto;
   border-radius: 7px;
   background-color: rgba(255, 255, 255, 0.234);
   backdrop-filter: blur(10px);
@@ -1009,7 +1049,16 @@ nav {
 }
 
 .domain-link span {
-  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.domain-link p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
 }
 
 .domain-link .text-ig {
@@ -2469,6 +2518,14 @@ body.light-mode .movie-list {
   color: #1e293b;
 }
 
+body.light-mode .top10-title {
+  color: #1e293b !important;
+}
+
+body.light-mode .top10-sub {
+  color: #64748b !important;
+}
+
 /* Trending & ranking lists */
 body.light-mode .trending-item,
 body.light-mode .ranking-item,
@@ -2514,10 +2571,7 @@ body.light-mode .menu1 ul li:hover {
   box-shadow: none;
 }
 
-/* Footer */
-body.light-mode .footer {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-}
+/* Footer will inherit default dark styling */
 
 /* Modals */
 body.light-mode .video-modal-content {
@@ -3065,13 +3119,17 @@ body.light-mode .suggest-meta {
   right: 15px;
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  width: 35px;
-  height: 35px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   color: #fff;
   font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: 0.3s;
+  z-index: 10;
 }
 
 .close-modal-btn:hover {
