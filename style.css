@@ -219,6 +219,16 @@ html, body {
     box-shadow: -10px 0 30px rgba(0, 0, 0, 0.7);
   }
 
+  /* Đảm bảo chữ trong menu trên mobile luôn là màu sáng vì nền menu mobile màu tối (kể cả khi bật chế độ sáng) */
+  body.light-mode .menu .nav-link li,
+  body.light-mode .menu .nav-link li a {
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  body.light-mode .menu .nav-link li:hover,
+  body.light-mode .menu .nav-link li a:hover {
+    color: #efb003 !important;
+  }
+
   /* 4. MENU CON */
   .menu1 {
     display: none !important;
@@ -855,25 +865,26 @@ nav {
   margin-bottom: 150px; /* Visually center it between description and absolute category section */
   width: 65px;
   height: 65px;
+  flex-shrink: 0; /* Ngăn chặn nút bị bóp méo thành hình bầu dục trên màn hình nhỏ */
   background: linear-gradient(135deg, #f43f5e 0%, #fb923c 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: translateX(2px);
   box-shadow: 0 0 20px rgba(244, 63, 94, 0.5);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
 }
 
 .play-btn:hover {
-  transform: translateX(2px) scale(1.15);
+  transform: scale(1.15);
   box-shadow: 0 0 35px rgba(244, 63, 94, 0.8);
 }
 
 .play-btn i, .play-btn span {
   color: #fff;
   font-size: 24px;
+  margin-left: 4px; /* Dịch chuyển icon sang phải một chút để căn giữa hoàn hảo về mặt thị giác */
 }
 
 .hero-thumbnails {
@@ -1093,6 +1104,19 @@ nav {
 }
 
 /* ==============Main====================== */
+/* Đảm bảo khi thao tác vào khối nào, khối đó sẽ luôn nổi lên trên cùng để thẻ phim phình to không bị che */
+.block-main:hover,
+.block-main:active,
+.block-main:focus-within,
+#library-section:hover,
+#library-section:active,
+#library-section:focus-within,
+#search-results-section:hover,
+#search-results-section:active,
+#search-results-section:focus-within {
+  position: relative;
+  z-index: 50; /* Giữ nhỏ hơn z-index của header (999) để không đè lên thanh nav */
+}
 .block-main {
   width: 100%;
   height: auto;
@@ -3324,6 +3348,7 @@ body.light-mode .suggest-meta {
   align-items: center;
   justify-content: center;
   transition: 0.3s ease;
+  z-index: 100; /* Quan trọng: Đảm bảo nút luôn nằm trên cùng, không bị khung thông tin đè lên */
 }
 
 .close-info-btn:hover {
@@ -3435,12 +3460,31 @@ body.light-mode .suggest-meta {
     height: 210px;
   }
   .info-details {
+    flex: none; /* Khắc phục lỗi flex-basis 0 làm box bị mất chiều cao */
+    width: 100%;
     max-height: unset;
     padding-right: 0;
     text-align: center;
   }
   .info-tags {
     justify-content: center;
+  }
+  .close-info-btn {
+    width: 48px; /* Tăng hẳn kích thước để siêu dễ bấm */
+    height: 48px;
+    top: 10px;
+    right: 10px;
+    font-size: 28px;
+    background: #ff4757; /* Màu đỏ nổi bật, sang trọng, báo hiệu đóng */
+    border: 2px solid #ffffff; /* Viền trắng bo tròn sắc nét */
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4); /* Hiệu ứng phát sáng nhẹ */
+    z-index: 100;
+  }
+  .close-info-btn:hover,
+  .close-info-btn:active {
+    background: #ff6b81;
+    transform: none; /* Tránh xoay làm lỗi click */
   }
 }
 

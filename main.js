@@ -314,11 +314,20 @@ const googleProvider = new GoogleAuthProvider();
   const episodeList = document.getElementById('episode-list');
 
   // Đóng Modal Video
-  if (videoCloseBtn) {
-    videoCloseBtn.addEventListener('click', () => {
+  window.closeVideoModal = function() {
+    if (videoModal && videoModal.classList.contains('show')) {
       videoModal.classList.remove('show');
-      videoIframe.src = ''; // Dừng phát video
-    });
+      if (videoIframe) videoIframe.src = 'about:blank'; // Force tắt hẳn iframe để ngừng âm thanh
+      const movieInfoPanel = document.getElementById('movie-info-panel');
+      if (movieInfoPanel) movieInfoPanel.classList.remove('active'); // Luôn đóng bảng thông tin khi đóng phim
+      if (history.state && history.state.view === 'movie') {
+        history.back(); // Quay lại trang trước đó (thường là home)
+      }
+    }
+  }
+
+  if (videoCloseBtn) {
+    videoCloseBtn.addEventListener('click', window.closeVideoModal);
   }
 
   // Logic cho Information Movie Panel
@@ -396,8 +405,7 @@ const googleProvider = new GoogleAuthProvider();
   // Đóng modal khi click ra ngoài
   window.addEventListener('click', (e) => {
     if (e.target === videoModal) {
-      videoModal.classList.remove('show');
-      videoIframe.src = '';
+      window.closeVideoModal();
     }
   });
 
@@ -534,7 +542,10 @@ const googleProvider = new GoogleAuthProvider();
   }
 
   // Xem phim (Phát Video)
-  window.playMovie = async function(slug, autoOpenInfo = false) {
+  window.playMovie = async function(slug, autoOpenInfo = false, pushHistory = true) {
+    if (pushHistory) {
+      history.pushState({ view: 'movie', slug: slug }, '', '#watch-' + slug);
+    }
     if(videoTitle) videoTitle.textContent = "Đang tải...";
     if(episodeList) episodeList.innerHTML = ""; // Xóa danh sách tập cũ
     if(videoModal) videoModal.classList.add('show');
@@ -622,12 +633,8 @@ const googleProvider = new GoogleAuthProvider();
            if(typeof window.renderMovieInfo === 'function') window.renderMovieInfo();
         }
       } else {
-        // Nếu panel ĐANG mở sẵn (do user mở rồi chọn tập khác), thì render lại với data mới
-        if (movieInfoPanel && movieInfoPanel.classList.contains('active')) {
-           if(typeof window.renderMovieInfo === 'function') window.renderMovieInfo();
-        } else {
-           if (movieInfoPanel) movieInfoPanel.classList.remove('active');
-        }
+        // Luôn đóng info panel khi người dùng chủ động chọn "Xem phim" thay vì "Chi tiết"
+        if (movieInfoPanel) movieInfoPanel.classList.remove('active');
       }
 
     } catch (error) {
@@ -856,16 +863,36 @@ const googleProvider = new GoogleAuthProvider();
   history.replaceState({ view: 'home' }, '', window.location.pathname);
 
   window.addEventListener('popstate', function(e) {
+    const videoModal = document.getElementById('video-modal');
+    const videoIframe = document.getElementById('video-iframe');
+    const librarySection = document.getElementById('library-section');
+
+    // Luôn đóng video modal nếu state KHÔNG phải là movie
+    if (!e.state || e.state.view !== 'movie') {
+      if (videoModal && videoModal.classList.contains('show')) {
+        videoModal.classList.remove('show');
+        if (videoIframe) videoIframe.src = 'about:blank';
+      }
+    }
+
     if (e.state) {
       if (e.state.view === 'home') {
         if(mainHomeContent) mainHomeContent.style.display = 'block';
         if(searchResultsSection) searchResultsSection.style.display = 'none';
+        if(librarySection) librarySection.style.display = 'none';
       } else if (e.state.view === 'search') {
         loadSearchData(e.state.apiUrl, e.state.title, false);
+      } else if (e.state.view === 'library') {
+        if(mainHomeContent) mainHomeContent.style.display = 'none';
+        if(searchResultsSection) searchResultsSection.style.display = 'none';
+        if(librarySection) librarySection.style.display = 'block';
+      } else if (e.state.view === 'movie') {
+        window.playMovie(e.state.slug, false, false);
       }
     } else {
        if(mainHomeContent) mainHomeContent.style.display = 'block';
        if(searchResultsSection) searchResultsSection.style.display = 'none';
+       if(librarySection) librarySection.style.display = 'none';
     }
   });
 
@@ -1401,6 +1428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (navLibraryBtn) {
         navLibraryBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            history.pushState({ view: 'library' }, '', '#library');
             if (mainHomeContent) mainHomeContent.style.display = 'none';
             if (searchResultsSection) searchResultsSection.style.display = 'none';
             if (librarySection) {
