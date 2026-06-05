@@ -1601,12 +1601,30 @@ img.logo.VTV {
 
 .video-modal-content {
   position: relative;
-  width: 90%;
-  max-width: 1000px;
+  width: 95%;
+  max-width: 1200px;
   background: #141414;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+/* Scrollbar cho Modal Xem Phim */
+.video-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+.video-modal-content::-webkit-scrollbar-track {
+  background: #141414;
+  border-radius: 0 8px 8px 0;
+}
+.video-modal-content::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+.video-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .video-close-btn {
@@ -2604,6 +2622,13 @@ body.light-mode .video-modal-content {
   box-shadow: 0 25px 80px rgba(99, 102, 241, 0.2);
 }
 
+body.light-mode .video-modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+body.light-mode .video-modal-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
 body.light-mode #video-title {
   color: #1e293b !important;
 }
@@ -3522,4 +3547,47 @@ body.light-mode .suggest-meta {
   border-color: #ef4444;
   transform: scale(1.15) rotate(5deg);
   box-shadow: 0 5px 15px rgba(239, 68, 68, 0.5);
+}
+
+/* ============== COMMENTS SECTION ============== */
+.comments-section { margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.03); border-radius: 12px; }
+.comments-title { color: #fff; font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.comments-title i { color: #efb003; }
+.comment-auth-warning { text-align: center; padding: 15px; background: rgba(239, 176, 3, 0.1); border: 1px solid rgba(239, 176, 3, 0.3); border-radius: 8px; color: #efb003; }
+.comment-input-area { margin-bottom: 30px; }
+.comment-input-form { display: flex; gap: 15px; align-items: flex-start; }
+.comment-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+.comment-input-wrapper { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+#comment-textarea { width: 100%; min-height: 80px; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.2); color: #fff; font-family: inherit; resize: vertical; outline: none; transition: border-color 0.3s, box-shadow 0.3s; }
+#comment-textarea:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
+.comment-actions { display: flex; justify-content: space-between; align-items: center; }
+#comment-char-count { font-size: 12px; color: #888; }
+.btn-submit-comment { padding: 8px 20px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: #fff; border: none; border-radius: 20px; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.3s; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
+.btn-submit-comment:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5); }
+.btn-submit-comment:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
+.comments-list { display: flex; flex-direction: column; gap: 20px; }
+.comment-item { display: flex; gap: 15px; animation: fadeIn 0.3s ease; }
+.comment-item-content { flex: 1; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 0 12px 12px 12px; }
+.comment-header { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.comment-name { color: #fff; font-weight: 600; font-size: 14px; }
+.comment-time { color: #888; font-size: 12px; }
+.btn-delete-comment { background: none; border: none; color: #ef4444; cursor: pointer; padding: 0 5px; font-size: 14px; opacity: 0; transition: opacity 0.2s, color 0.2s; margin-left: auto; }
+.comment-item:hover .btn-delete-comment { opacity: 0.7; }
+.btn-delete-comment:hover { opacity: 1 !important; color: #dc2626; transform: scale(1.1); }
+.comment-body { color: #ddd; font-size: 14px; line-height: 1.5; word-break: break-word; }
+.no-comments-msg { text-align: center; color: #888; padding: 20px 0; font-style: italic; }
+
+/* Light Mode Comments */
+body.light-mode .comments-section { background: rgba(0, 0, 0, 0.02); }
+body.light-mode .comments-title { color: #1e293b; }
+body.light-mode #comment-textarea { background: #fff; color: #1e293b; border-color: rgba(0, 0, 0, 0.1); }
+body.light-mode .comment-item-content { background: #fff; border: 1px solid rgba(0, 0, 0, 0.05); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+body.light-mode .comment-name { color: #1e293b; }
+body.light-mode .comment-body { color: #475569; }
+
+@media (max-width: 768px) {
+  .comment-input-form { gap: 10px; }
+  .comment-avatar { width: 35px; height: 35px; }
+  .comment-item { gap: 10px; }
+  .comments-section { padding: 15px; margin-bottom: 40px; }
 }

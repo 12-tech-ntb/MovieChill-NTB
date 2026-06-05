@@ -11,7 +11,7 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
-  getFirestore, doc, setDoc, deleteDoc, getDoc, collection, query, orderBy, getDocs, serverTimestamp 
+  getFirestore, doc, setDoc, deleteDoc, getDoc, collection, query, orderBy, getDocs, serverTimestamp, onSnapshot, addDoc 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -317,7 +317,14 @@ const googleProvider = new GoogleAuthProvider();
   window.closeVideoModal = function() {
     if (videoModal && videoModal.classList.contains('show')) {
       videoModal.classList.remove('show');
-      if (videoIframe) videoIframe.src = 'about:blank'; // Force tắt hẳn iframe để ngừng âm thanh
+      if (videoIframe) {
+        videoIframe.src = ''; 
+        const parent = videoIframe.parentNode;
+        if (parent) {
+          parent.removeChild(videoIframe);
+          parent.insertBefore(videoIframe, parent.firstChild);
+        }
+      }
       const movieInfoPanel = document.getElementById('movie-info-panel');
       if (movieInfoPanel) movieInfoPanel.classList.remove('active'); // Luôn đóng bảng thông tin khi đóng phim
       if (history.state && history.state.view === 'movie') {
@@ -548,7 +555,10 @@ const googleProvider = new GoogleAuthProvider();
     }
     if(videoTitle) videoTitle.textContent = "Đang tải...";
     if(episodeList) episodeList.innerHTML = ""; // Xóa danh sách tập cũ
-    if(videoModal) videoModal.classList.add('show');
+    if(videoModal) {
+      videoModal.classList.add('show');
+      if(window.initComments) window.initComments(slug);
+    }
     // Ẩn search dropdown nếu đang mở
     hideSuggestions();
 
@@ -871,7 +881,14 @@ const googleProvider = new GoogleAuthProvider();
     if (!e.state || e.state.view !== 'movie') {
       if (videoModal && videoModal.classList.contains('show')) {
         videoModal.classList.remove('show');
-        if (videoIframe) videoIframe.src = 'about:blank';
+        if (videoIframe) {
+          videoIframe.src = ''; 
+          const parent = videoIframe.parentNode;
+          if (parent) {
+            parent.removeChild(videoIframe);
+            parent.insertBefore(videoIframe, parent.firstChild);
+          }
+        }
       }
     }
 
@@ -1523,5 +1540,191 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-});
+    // ==========================================
+    // REAL-TIME COMMENTS
+    // ==========================================
+    let currentCommentsUnsubscribe = null;
+    let currentWatchingMovieSlug = null;
 
+    // Tính thời gian tương đối
+    function timeSince(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+      let interval = seconds / 31536000;
+      if (interval > 1) return Math.floor(interval) + " năm trước";
+      interval = seconds / 2592000;
+      if (interval > 1) return Math.floor(interval) + " tháng trước";
+      interval = seconds / 86400;
+      if (interval > 1) return Math.floor(interval) + " ngày trước";
+      interval = seconds / 3600;
+      if (interval > 1) return Math.floor(interval) + " giờ trước";
+      interval = seconds / 60;
+      if (interval > 1) return Math.floor(interval) + " phút trước";
+      return "vừa xong";
+    }
+
+    // Khởi tạo khung bình luận cho phim
+    window.initComments = function(movieSlug) {
+      currentWatchingMovieSlug = movieSlug;
+      const commentsList = document.getElementById('comments-list');
+      if (!commentsList) return;
+      
+      // Hủy listener cũ nếu có
+      if (currentCommentsUnsubscribe) {
+        currentCommentsUnsubscribe();
+        currentCommentsUnsubscribe = null;
+      }
+      
+      commentsList.innerHTML = '<div class="no-comments-msg">Đang tải bình luận...</div>';
+
+      import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(({ collection, query, orderBy, onSnapshot }) => {
+        // Tạo query lấy bình luận xếp theo thời gian mới nhất
+        const commentsRef = collection(window.db, 'movies', movieSlug, 'comments');
+        const q = query(commentsRef, orderBy('createdAt', 'desc'));
+
+        // Lắng nghe realtime
+        currentCommentsUnsubscribe = onSnapshot(q, (snapshot) => {
+          if (snapshot.empty) {
+            commentsList.innerHTML = '<div class="no-comments-msg">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</div>';
+            return;
+          }
+
+          let commentsHTML = '';
+          const currentUid = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
+
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const timeStr = data.createdAt ? timeSince(data.createdAt.toDate()) : 'vừa xong';
+            const avatarUrl = data.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.displayName || 'User') + '&background=random';
+            
+            const isOwner = currentUid && data.uid === currentUid;
+            const deleteBtnHtml = isOwner ? `<button class="btn-delete-comment" data-id="${docSnap.id}" title="Xóa bình luận"><i class="fa-solid fa-trash"></i></button>` : '';
+
+            commentsHTML += `
+              <div class="comment-item">
+                <img src="${avatarUrl}" alt="${data.displayName}" class="comment-avatar">
+                <div class="comment-item-content">
+                  <div class="comment-header">
+                    <span class="comment-name">${data.displayName || 'Người dùng ẩn danh'}</span>
+                    <span class="comment-time">${timeStr}</span>
+                    ${deleteBtnHtml}
+                  </div>
+                  <div class="comment-body">${data.text}</div>
+                </div>
+              </div>
+            `;
+          });
+          commentsList.innerHTML = commentsHTML;
+        }, (error) => {
+          console.error("Lỗi khi tải bình luận: ", error);
+          commentsList.innerHTML = '<div class="no-comments-msg" style="color: #ef4444;">Không thể tải bình luận. Vui lòng tải lại trang.</div>';
+        });
+      });
+    };
+
+    // Lắng nghe sự kiện Auth để bật tắt form bình luận
+    const authWarning = document.getElementById('comment-auth-warning');
+    const inputForm = document.getElementById('comment-input-form');
+    const avatarImg = document.getElementById('current-user-avatar');
+    const textarea = document.getElementById('comment-textarea');
+    const charCount = document.getElementById('comment-char-count');
+    const btnSubmit = document.getElementById('btn-submit-comment');
+
+    import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js").then(({ onAuthStateChanged }) => {
+      if (window.auth) {
+        onAuthStateChanged(window.auth, (user) => {
+          if (user) {
+            if(authWarning) authWarning.style.display = 'none';
+            if(inputForm) inputForm.style.display = 'flex';
+            if(avatarImg) avatarImg.src = user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || 'User') + '&background=random';
+          } else {
+            if(authWarning) authWarning.style.display = 'block';
+            if(inputForm) inputForm.style.display = 'none';
+          }
+        });
+      }
+    });
+
+    // Xử lý đếm ký tự
+    if (textarea) {
+      textarea.addEventListener('input', () => {
+        const len = textarea.value.length;
+        if(charCount) charCount.textContent = `${len}/500`;
+        if (len > 0 && len <= 500) {
+          if(btnSubmit) btnSubmit.disabled = false;
+        } else {
+          if(btnSubmit) btnSubmit.disabled = true;
+        }
+      });
+    }
+
+    // Xử lý gửi bình luận
+    if (btnSubmit) {
+      btnSubmit.disabled = true; // Mặc định disable
+      btnSubmit.addEventListener('click', () => {
+        if (!window.auth || !window.auth.currentUser || !currentWatchingMovieSlug) {
+          alert("Vui lòng đăng nhập để bình luận!");
+          return;
+        }
+        
+        const text = textarea.value.trim();
+        if (!text || text.length > 500) return;
+        
+        btnSubmit.disabled = true;
+        const originalText = btnSubmit.textContent;
+        btnSubmit.textContent = 'Đang gửi...';
+
+        import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(({ collection, addDoc, serverTimestamp }) => {
+          const user = window.auth.currentUser;
+          addDoc(collection(window.db, 'movies', currentWatchingMovieSlug, 'comments'), {
+            uid: user.uid,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            text: text,
+            createdAt: serverTimestamp()
+          }).then(() => {
+            textarea.value = '';
+            if(charCount) charCount.textContent = '0/500';
+          }).catch((error) => {
+            console.error("Lỗi khi gửi bình luận: ", error);
+            alert("Có lỗi xảy ra, vui lòng thử lại sau!");
+          }).finally(() => {
+            btnSubmit.textContent = originalText;
+            btnSubmit.disabled = textarea.value.trim().length === 0;
+          });
+        });
+      });
+    }
+
+    // Xử lý xóa bình luận
+    const commentsListElement = document.getElementById('comments-list');
+    if (commentsListElement) {
+      commentsListElement.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.btn-delete-comment');
+        if (deleteBtn) {
+          const commentId = deleteBtn.getAttribute('data-id');
+          if (confirm('Bạn có chắc chắn muốn xóa bình luận này?')) {
+            import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(({ doc, deleteDoc }) => {
+              const docRef = doc(window.db, 'movies', currentWatchingMovieSlug, 'comments', commentId);
+              deleteDoc(docRef).catch(err => {
+                console.error("Lỗi khi xóa bình luận: ", err);
+                alert("Không thể xóa bình luận, vui lòng kiểm tra lại quyền hoặc kết nối mạng!");
+              });
+            });
+          }
+        }
+      });
+    }
+    // Gắn cleanup vào window.closeVideoModal
+    const originalCloseVideoModal = window.closeVideoModal;
+    window.closeVideoModal = function() {
+      if (currentCommentsUnsubscribe) {
+        currentCommentsUnsubscribe();
+        currentCommentsUnsubscribe = null;
+      }
+      currentWatchingMovieSlug = null;
+      if (originalCloseVideoModal) {
+        originalCloseVideoModal();
+      }
+    };
+
+});
