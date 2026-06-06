@@ -92,7 +92,7 @@ const googleProvider = new GoogleAuthProvider();
   // Lấy dữ liệu 5 phim mới từ API
   async function fetchHeroMovies() {
     try {
-      const res = await fetch('https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=1');
+      const res = await fetch('https://ophim1.com/v1/api/quoc-gia/han-quoc?page=1');
       const data = await res.json();
       const top5 = data.data.items.slice(0, 5);
       const domainImg = data.data.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/';
@@ -662,7 +662,7 @@ const googleProvider = new GoogleAuthProvider();
     if (episodes.length > 0 && videoIframe) {
       videoIframe.src = episodes[0].link_embed;
       let epNameDef = episodes[0].name.includes('Tập') ? episodes[0].name : 'Tập ' + episodes[0].name;
-      if (videoTitle) videoTitle.textContent = movieName + " - " + epNameDef;
+      if (videoTitle) videoTitle.innerHTML = `<span class="movie-name-part">${movieName}</span><span class="episode-name"><span class="ep-dash"> - </span>${epNameDef}</span>`;
       if (typeof libAddContinue === 'function' && window.currentPlayingMovie) {
           libAddContinue(window.currentPlayingMovie, epNameDef);
       }
@@ -683,7 +683,7 @@ const googleProvider = new GoogleAuthProvider();
          document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
          btn.classList.add('active');
          if(videoIframe) videoIframe.src = ep.link_embed;
-         if(videoTitle) videoTitle.textContent = movieName + " - " + epName;
+         if(videoTitle) videoTitle.innerHTML = `<span class="movie-name-part">${movieName}</span><span class="episode-name"><span class="ep-dash"> - </span>${epName}</span>`;
          if (typeof libAddContinue === 'function' && window.currentPlayingMovie) {
              libAddContinue(window.currentPlayingMovie, epName);
          }
@@ -1591,28 +1591,76 @@ document.addEventListener('DOMContentLoaded', () => {
           let commentsHTML = '';
           const currentUid = window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null;
 
+          const parents = [];
+          const repliesMap = {};
+
           snapshot.forEach(docSnap => {
             const data = docSnap.data();
-            const timeStr = data.createdAt ? timeSince(data.createdAt.toDate()) : 'vừa xong';
-            const avatarUrl = data.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.displayName || 'User') + '&background=random';
-            
-            const isOwner = currentUid && data.uid === currentUid;
-            const deleteBtnHtml = isOwner ? `<button class="btn-delete-comment" data-id="${docSnap.id}" title="Xóa bình luận"><i class="fa-solid fa-trash"></i></button>` : '';
+            const comment = { id: docSnap.id, ...data };
+            if (data.parentId) {
+              if (!repliesMap[data.parentId]) repliesMap[data.parentId] = [];
+              repliesMap[data.parentId].push(comment);
+            } else {
+              parents.push(comment);
+            }
+          });
 
-            commentsHTML += `
-              <div class="comment-item">
-                <img src="${avatarUrl}" alt="${data.displayName}" class="comment-avatar">
+          const generateCommentHTML = (c, isReply = false, extraClass = '') => {
+            const timeStr = c.createdAt ? timeSince(c.createdAt.toDate()) : 'vừa xong';
+            const avatarUrl = c.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(c.displayName || 'User') + '&background=random';
+            const isOwner = currentUid && c.uid === currentUid;
+            
+            const parentIdAttr = isReply ? c.parentId : c.id;
+            const replyBtnHtml = currentUid ? `<button class="btn-reply-comment" data-id="${c.id}" data-parent-id="${parentIdAttr}" data-name="${c.displayName}">Phản hồi</button>` : '';
+            const deleteBtnHtml = isOwner ? `<button class="btn-delete-comment" data-id="${c.id}" title="Xóa bình luận"><i class="fa-solid fa-trash"></i></button>` : '';
+            const replyToHtml = (isReply && c.replyTo) ? `<span class="reply-to-tag">@${c.replyTo}</span>` : '';
+
+            return `
+              <div class="comment-item ${extraClass}" id="comment-${c.id}">
+                <img src="${avatarUrl}" alt="${c.displayName}" class="comment-avatar">
                 <div class="comment-item-content">
                   <div class="comment-header">
-                    <span class="comment-name">${data.displayName || 'Người dùng ẩn danh'}</span>
+                    <span class="comment-name">${c.displayName || 'Người dùng ẩn danh'}</span>
                     <span class="comment-time">${timeStr}</span>
+                    ${replyBtnHtml}
                     ${deleteBtnHtml}
                   </div>
-                  <div class="comment-body">${data.text}</div>
+                  <div class="comment-body">${replyToHtml}${c.text}</div>
                 </div>
               </div>
             `;
+          };
+
+          parents.forEach(p => {
+            commentsHTML += generateCommentHTML(p, false);
+            const reps = repliesMap[p.id];
+            if (reps && reps.length > 0) {
+              reps.reverse(); // Đảo ngược để cũ nhất lên trên
+              commentsHTML += `<div class="replies-container">`;
+              
+              const MAX_VISIBLE = 2;
+              const hasMore = reps.length > MAX_VISIBLE;
+
+              reps.forEach((r, index) => {
+                const extraClass = (hasMore && index >= MAX_VISIBLE) ? 'hidden-reply' : '';
+                commentsHTML += generateCommentHTML(r, true, extraClass);
+              });
+
+              if (hasMore) {
+                const hiddenCount = reps.length - MAX_VISIBLE;
+                commentsHTML += `
+                  <div class="show-more-replies-wrapper">
+                    <button class="btn-show-more-replies">
+                      <i class="fa-solid fa-reply"></i> Xem thêm ${hiddenCount} phản hồi
+                    </button>
+                  </div>
+                `;
+              }
+
+              commentsHTML += `</div>`;
+            }
           });
+
           commentsList.innerHTML = commentsHTML;
         }, (error) => {
           console.error("Lỗi khi tải bình luận: ", error);
@@ -1623,6 +1671,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Lắng nghe sự kiện Auth để bật tắt form bình luận
     const authWarning = document.getElementById('comment-auth-warning');
+    const loginTrigger = document.querySelector('.login-trigger');
+    if (loginTrigger) {
+      loginTrigger.addEventListener('click', () => {
+        const loginModal = document.getElementById('login-modal');
+        if (loginModal) {
+            loginModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+      });
+    }
     const inputForm = document.getElementById('comment-input-form');
     const avatarImg = document.getElementById('current-user-avatar');
     const textarea = document.getElementById('comment-textarea');
@@ -1695,7 +1753,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Xử lý xóa bình luận
+    // Xử lý sự kiện trên danh sách bình luận (Xóa, Phản hồi)
     const commentsListElement = document.getElementById('comments-list');
     if (commentsListElement) {
       commentsListElement.addEventListener('click', (e) => {
@@ -1711,6 +1769,94 @@ document.addEventListener('DOMContentLoaded', () => {
               });
             });
           }
+          return;
+        }
+
+        const replyBtn = e.target.closest('.btn-reply-comment');
+        if (replyBtn) {
+          // Xóa các form reply cũ nếu có
+          document.querySelectorAll('.reply-input-form').forEach(f => f.remove());
+
+          const parentId = replyBtn.getAttribute('data-parent-id');
+          const replyToName = replyBtn.getAttribute('data-name');
+          const commentItemContent = replyBtn.closest('.comment-item-content');
+          
+          if (commentItemContent) {
+            const formHtml = `
+              <div class="reply-input-form">
+                <div class="reply-input-wrapper">
+                  <textarea class="reply-textarea" placeholder="Viết phản hồi..."></textarea>
+                  <div class="reply-actions">
+                    <button class="btn-cancel-reply">Hủy</button>
+                    <button class="btn-send-reply" data-parent-id="${parentId}" data-reply-to="${replyToName}">Gửi phản hồi</button>
+                  </div>
+                </div>
+              </div>
+            `;
+            commentItemContent.insertAdjacentHTML('beforeend', formHtml);
+            
+            const newTextarea = commentItemContent.querySelector('.reply-textarea');
+            const newSendBtn = commentItemContent.querySelector('.btn-send-reply');
+            newSendBtn.disabled = true;
+
+            newTextarea.addEventListener('input', () => {
+              newSendBtn.disabled = newTextarea.value.trim().length === 0;
+            });
+            newTextarea.focus();
+          }
+          return;
+        }
+
+        const cancelBtn = e.target.closest('.btn-cancel-reply');
+        if (cancelBtn) {
+          const form = cancelBtn.closest('.reply-input-form');
+          if (form) form.remove();
+          return;
+        }
+
+        const showMoreBtn = e.target.closest('.btn-show-more-replies');
+        if (showMoreBtn) {
+          const container = showMoreBtn.closest('.replies-container');
+          if (container) {
+            container.querySelectorAll('.hidden-reply').forEach(el => el.classList.remove('hidden-reply'));
+            showMoreBtn.closest('.show-more-replies-wrapper').remove();
+          }
+          return;
+        }
+
+        const sendReplyBtn = e.target.closest('.btn-send-reply');
+        if (sendReplyBtn) {
+          if (!window.auth || !window.auth.currentUser) return;
+          const form = sendReplyBtn.closest('.reply-input-form');
+          const textarea = form.querySelector('.reply-textarea');
+          const text = textarea.value.trim();
+          if (!text) return;
+
+          const parentId = sendReplyBtn.getAttribute('data-parent-id');
+          const replyTo = sendReplyBtn.getAttribute('data-reply-to');
+          
+          sendReplyBtn.disabled = true;
+          sendReplyBtn.textContent = 'Đang gửi...';
+
+          import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(({ collection, addDoc, serverTimestamp }) => {
+            const user = window.auth.currentUser;
+            addDoc(collection(window.db, 'movies', currentWatchingMovieSlug, 'comments'), {
+              uid: user.uid,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              text: text,
+              parentId: parentId,
+              replyTo: replyTo,
+              createdAt: serverTimestamp()
+            }).then(() => {
+              if (form) form.remove();
+            }).catch((error) => {
+              console.error("Lỗi khi gửi phản hồi: ", error);
+              alert("Có lỗi xảy ra, vui lòng thử lại sau!");
+              sendReplyBtn.textContent = 'Gửi phản hồi';
+              sendReplyBtn.disabled = false;
+            });
+          });
         }
       });
     }

@@ -481,11 +481,12 @@ html, body {
   /* 14. VIDEO PLAYER MODAL */
   .video-modal-content {
     width: 100% !important;
-    height: 100vh !important;
+    height: 100dvh !important;
     border-radius: 0 !important;
     margin: 0 !important;
     padding: 15px !important;
-    max-height: 100vh !important;
+    padding-top: 15px !important;
+    max-height: 100dvh !important;
   }
 
   .iframe-container {
@@ -1630,9 +1631,10 @@ img.logo.VTV {
 .video-close-btn {
   color: #aaa;
   position: absolute;
-  top: 5px;
-  right: 15px;
+  top: 18px;
+  right: 18px;
   font-size: 28px;
+  line-height: 1;
   font-weight: bold;
   cursor: pointer;
   z-index: 10;
@@ -2756,7 +2758,7 @@ body.light-mode .suggest-meta {
 .login-modal {
   display: none; /* Ẩn mặc định */
   position: fixed;
-  z-index: 1001; /* Trên các element khác */
+  z-index: 99999; /* Đảm bảo luôn nằm trên cùng, kể cả trên cửa sổ xem phim */
   left: 0;
   top: 0;
   width: 100%;
@@ -3310,6 +3312,10 @@ body.light-mode .suggest-meta {
   gap: 15px;
   padding-right: 40px; /* Tránh đè lên nút X đóng modal */
 }
+#video-title {
+  color: #fff;
+  margin: 0;
+}
 
 .btn-movie-info {
   background: linear-gradient(135deg, #f59e0b, #ef4444);
@@ -3553,7 +3559,54 @@ body.light-mode .suggest-meta {
 .comments-section { margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.03); border-radius: 12px; }
 .comments-title { color: #fff; font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
 .comments-title i { color: #efb003; }
-.comment-auth-warning { text-align: center; padding: 15px; background: rgba(239, 176, 3, 0.1); border: 1px solid rgba(239, 176, 3, 0.3); border-radius: 8px; color: #efb003; }
+.comment-auth-warning { 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 22px 20px; 
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%); 
+  border: 1px solid rgba(168, 85, 247, 0.3); 
+  border-radius: 12px; 
+  color: #e2e8f0; 
+  font-size: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+}
+.comment-auth-warning .auth-lock-icon {
+  position: absolute;
+  bottom: -10px;
+  right: 15px;
+  font-size: 50px;
+  color: rgba(168, 85, 247, 0.15);
+  animation: pulse-lock 3s infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+.comment-auth-warning p {
+  margin: 0;
+  letter-spacing: 0.3px;
+  position: relative;
+  z-index: 1;
+}
+.comment-auth-warning .login-trigger {
+  color: #a855f7;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: all 0.3s ease;
+}
+.comment-auth-warning .login-trigger:hover {
+  color: #c084fc;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+}
+
+@keyframes pulse-lock {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
 .comment-input-area { margin-bottom: 30px; }
 .comment-input-form { display: flex; gap: 15px; align-items: flex-start; }
 .comment-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
@@ -3577,6 +3630,28 @@ body.light-mode .suggest-meta {
 .comment-body { color: #ddd; font-size: 14px; line-height: 1.5; word-break: break-word; }
 .no-comments-msg { text-align: center; color: #888; padding: 20px 0; font-style: italic; }
 
+/* Nested Replies Styles */
+.btn-reply-comment { background: none; border: none; color: #888; cursor: pointer; padding: 0 5px; font-size: 13px; font-weight: 500; transition: color 0.2s; margin-left: 10px; }
+.btn-reply-comment:hover { color: #a855f7; }
+.replies-container { margin-top: 10px; margin-left: 21px; border-left: 2px solid rgba(255, 255, 255, 0.1); padding-left: 20px; display: flex; flex-direction: column; gap: 15px; }
+.replies-container .comment-avatar { width: 35px; height: 35px; }
+.reply-input-form { display: flex; gap: 10px; margin-top: 10px; align-items: flex-start; }
+.reply-input-wrapper { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.reply-textarea { width: 100%; min-height: 50px; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.2); color: #fff; font-family: inherit; resize: vertical; outline: none; transition: border-color 0.3s; font-size: 14px; }
+.reply-textarea:focus { border-color: #a855f7; }
+.reply-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.btn-cancel-reply { background: none; border: none; color: #888; cursor: pointer; font-size: 13px; padding: 5px 10px; }
+.btn-cancel-reply:hover { color: #fff; }
+.btn-send-reply { padding: 6px 15px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: #fff; border: none; border-radius: 15px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-send-reply:disabled { background: #555; color: #888; cursor: not-allowed; }
+.reply-to-tag { color: #a855f7; font-weight: 600; margin-right: 5px; }
+
+/* Show More Replies */
+.hidden-reply { display: none !important; }
+.show-more-replies-wrapper { padding-top: 5px; }
+.btn-show-more-replies { background: none; border: none; color: #a855f7; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 5px 0; transition: color 0.2s; }
+.btn-show-more-replies:hover { color: #c084fc; text-decoration: underline; }
+
 /* Light Mode Comments */
 body.light-mode .comments-section { background: rgba(0, 0, 0, 0.02); }
 body.light-mode .comments-title { color: #1e293b; }
@@ -3590,4 +3665,50 @@ body.light-mode .comment-body { color: #475569; }
   .comment-avatar { width: 35px; height: 35px; }
   .comment-item { gap: 10px; }
   .comments-section { padding: 15px; margin-bottom: 40px; }
+  
+  /* Prevent iOS Safari Auto-Zoom */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
+  /* Mobile Video Header Layout */
+  .video-header-flex {
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+    gap: 10px;
+  }
+  #video-title {
+    flex-shrink: 1;
+    max-width: 55%;
+    font-size: 16px;
+    line-height: 1.3;
+    margin: 0;
+  }
+  .btn-movie-info {
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+  .video-close-btn {
+    position: static !important;
+    font-size: 32px !important;
+    line-height: 0.8 !important;
+    margin-bottom: 4px !important;
+    flex-shrink: 0;
+  }
+  .episode-name {
+    display: block;
+    font-size: 0.9em;
+    color: #cbd5e1;
+    margin-top: 4px;
+  }
+  .ep-dash {
+    display: none;
+  }
+  .movie-name-part {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }

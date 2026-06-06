@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <link rel="stylesheet" href="style.css" />
      <link
       rel="apple-touch-icon"
@@ -407,10 +407,10 @@
       <!-- Video Player Modal -->
       <div id="video-modal" class="video-modal">
         <div class="video-modal-content">
-          <span class="video-close-btn">&times;</span>
           <div class="video-header-flex">
-            <h3 id="video-title" style="color: white; margin: 0;">Đang tải...</h3>
+            <h3 id="video-title">Đang tải...</h3>
             <button id="btn-movie-info" class="btn-movie-info" title="Thông tin phim"><i class="fa-solid fa-circle-info"></i> Thông tin</button>
+            <span class="video-close-btn">&times;</span>
           </div>
           <div class="iframe-container" style="position: relative;">
             <iframe id="video-iframe" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
@@ -469,7 +469,8 @@
             
             <div class="comment-input-area">
               <div id="comment-auth-warning" class="comment-auth-warning">
-                <p>Vui lòng đăng nhập để bình luận về bộ phim này.</p>
+                <i class="fa-solid fa-lock auth-lock-icon"></i>
+                <p>Bạn cần <strong class="login-trigger">đăng nhập</strong> để tham gia bình luận cùng mọi người!</p>
               </div>
               <div id="comment-input-form" class="comment-input-form" style="display:none;">
                 <img id="current-user-avatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Avatar" class="comment-avatar">
