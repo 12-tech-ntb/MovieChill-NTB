@@ -305,7 +305,11 @@ html, body {
     gap: 15px !important;
     width: 100% !important;
     scroll-snap-type: x mandatory;
-    padding-bottom: 10px !important;
+    padding-top: 15px !important;
+    padding-bottom: 25px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    box-sizing: border-box !important;
   }
   
   .item::-webkit-scrollbar {
@@ -1662,6 +1666,9 @@ img.logo.VTV {
   height: 0;
   overflow: hidden;
   background: #000;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .iframe-container iframe {
@@ -1670,6 +1677,9 @@ img.logo.VTV {
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: #000;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* Episode List Styles */
@@ -3751,4 +3761,13 @@ body.light-mode .close-info-modal { color: #64748b; }
 body.light-mode .close-info-modal:hover { color: #0f172a; }
 body.light-mode #info-modal-title { color: #6366f1; border-color: rgba(0,0,0,0.1); }
 body.light-mode .info-body { color: #334155; }
-body.light-mode .info-body h4 { color: #0f172a; }
+body.light-mode .info-body h4 { color: #0f172a; }
+
+/* Fix overlapping badges on mobile */
+@media (max-width: 768px) {
+  .continue-badge {
+    top: 40px;
+    right: auto;
+    left: 10px;
+  }
+}
