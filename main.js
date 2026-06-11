@@ -1873,4 +1873,82 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
+    // --- SUPPORT INFO MODAL LOGIC ---
+    const infoModal = document.getElementById('info-modal');
+    const infoModalTitle = document.getElementById('info-modal-title');
+    const infoModalBody = document.getElementById('info-modal-body');
+    const closeInfoModalBtn = document.querySelector('.close-info-modal');
+    
+    const infoData = {
+      faq: {
+        title: "Câu Hỏi Thường Gặp (FAQ)",
+        content: `
+          <h4>1. Phim trên MovieChill có mất phí không?</h4>
+          <p>Không, toàn bộ phim trên MovieChill đều được cung cấp hoàn toàn miễn phí.</p>
+          <h4>2. Làm sao để tải phim về máy?</h4>
+          <p>Hiện tại chúng tôi chỉ hỗ trợ xem trực tuyến để bảo vệ bản quyền. Tính năng tải phim sẽ được cân nhắc trong tương lai.</p>
+          <h4>3. Tôi bị lỗi không xem được video?</h4>
+          <p>Bạn vui lòng thử đổi server (Vietsub #1, #2) hoặc tải lại trang. Nếu vẫn không được, hãy liên hệ với chúng tôi.</p>
+        `
+      },
+      terms: {
+        title: "Điều Khoản Dịch Vụ",
+        content: `
+          <p>Chào mừng bạn đến với MovieChill. Khi sử dụng trang web này, bạn đồng ý với các điều khoản sau:</p>
+          <ul>
+            <li><strong>Mục đích sử dụng:</strong> Trang web chỉ dành cho mục đích giải trí cá nhân, phi thương mại.</li>
+            <li><strong>Bản quyền:</strong> Chúng tôi không lưu trữ bất kỳ tệp video nào trên máy chủ của mình. Mọi nội dung đều được liên kết từ bên thứ ba.</li>
+            <li><strong>Trách nhiệm:</strong> Người dùng tự chịu trách nhiệm về các bình luận và tương tác của mình trên nền tảng.</li>
+          </ul>
+        `
+      },
+      privacy: {
+        title: "Chính Sách Bảo Mật",
+        content: `
+          <p>Chúng tôi luôn tôn trọng quyền riêng tư của bạn. Dưới đây là cách chúng tôi xử lý dữ liệu:</p>
+          <ul>
+            <li><strong>Thu thập dữ liệu:</strong> Chúng tôi chỉ lưu trữ các thông tin cơ bản (Tên, Email, Avatar) khi bạn đăng nhập qua Google/Facebook để hỗ trợ tính năng bình luận.</li>
+            <li><strong>Cookies:</strong> Hệ thống sử dụng cookies và localStorage để lưu trữ trạng thái đăng nhập và phim bạn đang xem dở.</li>
+            <li><strong>Cam kết:</strong> Chúng tôi tuyệt đối không bán hoặc chia sẻ thông tin cá nhân của bạn cho bên thứ ba.</li>
+          </ul>
+        `
+      },
+      contact: {
+        title: "Liên Hệ Với Chúng Tôi",
+        content: `
+          <p>Nếu bạn có bất kỳ câu hỏi, góp ý hay báo cáo lỗi, vui lòng liên hệ qua các kênh sau:</p>
+          <ul>
+            <li><strong>Email:</strong> support@moviechill.vn</li>
+            <li><strong>Facebook:</strong> fb.com/moviechill.official</li>
+            <li><strong>Hotline:</strong> 1900 1234 (Giờ hành chính)</li>
+          </ul>
+          <p><em>Chúng tôi sẽ cố gắng phản hồi bạn trong vòng 24 giờ làm việc. Cảm ơn bạn đã đồng hành!</em></p>
+        `
+      }
+    };
+
+    document.querySelectorAll('.info-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const type = link.getAttribute('data-info');
+        if (infoData[type]) {
+          infoModalTitle.innerHTML = infoData[type].title;
+          infoModalBody.innerHTML = infoData[type].content;
+          infoModal.style.display = 'block';
+        }
+      });
+    });
+
+    if (closeInfoModalBtn) {
+      closeInfoModalBtn.addEventListener('click', () => {
+        infoModal.style.display = 'none';
+      });
+    }
+
+    window.addEventListener('click', (e) => {
+      if (e.target === infoModal) {
+        infoModal.style.display = 'none';
+      }
+    });
+
 });
