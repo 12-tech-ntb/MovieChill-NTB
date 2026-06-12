@@ -8,7 +8,11 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider,
   onAuthStateChanged,
-  signOut
+  signOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
   getFirestore, doc, setDoc, deleteDoc, getDoc, collection, query, orderBy, getDocs, serverTimestamp, onSnapshot, addDoc 
@@ -1153,8 +1157,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // Khi đã đăng nhập - Sử dụng cấu trúc HTML mới chuyên nghiệp hơn
       btnOpenLogin.classList.add('user-logged-in-btn');
       btnOpenLogin.innerHTML = `
-        <img src="${user.photoURL || './ig/default-avatar.png'}" class="user-avatar" alt="avatar">
-        <span class="user-name">${user.displayName || 'Người dùng'}</span>
+        <img src="${user.photoURL || './ig/avatar-tho-bay-mau-11.jpg'}" class="user-avatar" alt="avatar">
+        <span class="user-name">${user.displayName || 'Member Chill'}</span>
       `;
       btnOpenLogin.title = "Click để Đăng Xuất";
       
@@ -1256,12 +1260,107 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Tạm thời ngăn form submit
+  // Logic Đăng ký / Đăng nhập bằng Email
   const loginFormElement = document.getElementById('auth-login-form');
-  if (loginFormElement) {
-    loginFormElement.addEventListener('submit', (e) => {
+  const loginTitle = document.querySelector('.login-title');
+  const loginSubmitBtn = document.querySelector('.login-submit-btn');
+  const btnGotoRegister = document.getElementById('btn-goto-register');
+  const btnGotoRegisterSub = document.getElementById('btn-goto-register-sub');
+  
+  let isRegisterMode = false;
+
+  // Hàm chuyển đổi giao diện giữa Đăng nhập và Đăng ký
+  function toggleAuthMode() {
+    isRegisterMode = !isRegisterMode;
+    if (isRegisterMode) {
+      if(loginTitle) loginTitle.textContent = 'Đăng ký';
+      if(loginSubmitBtn) loginSubmitBtn.textContent = 'Đăng ký';
+      if(btnGotoRegister) btnGotoRegister.textContent = 'ĐĂNG NHẬP NGAY';
+      if(btnGotoRegisterSub) btnGotoRegisterSub.textContent = 'đăng nhập ngay';
+    } else {
+      if(loginTitle) loginTitle.textContent = 'Đăng nhập';
+      if(loginSubmitBtn) loginSubmitBtn.textContent = 'Đăng nhập';
+      if(btnGotoRegister) btnGotoRegister.textContent = 'ĐĂNG KÝ NGAY';
+      if(btnGotoRegisterSub) btnGotoRegisterSub.textContent = 'đăng ký ngay';
+    }
+  }
+
+  // Gắn sự kiện cho các nút chuyển đổi (nếu có)
+  if (btnGotoRegister) {
+    btnGotoRegister.addEventListener('click', (e) => {
       e.preventDefault();
-      alert('Chức năng đăng nhập bằng Email đang được phát triển. Vui lòng sử dụng Google!');
+      toggleAuthMode();
+    });
+  }
+
+  if (btnGotoRegisterSub) {
+    btnGotoRegisterSub.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleAuthMode();
+    });
+  }
+
+  // Xử lý sự kiện submit form
+  if (loginFormElement) {
+    loginFormElement.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const emailInput = document.getElementById('login-username').value;
+      const passInput = document.getElementById('login-pw').value;
+      
+      if (!emailInput || !passInput) {
+        alert("Vui lòng nhập Email và Mật khẩu!");
+        return;
+      }
+      
+      try {
+        if (isRegisterMode) {
+          const userCredential = await createUserWithEmailAndPassword(window.auth, emailInput, passInput);
+          
+          // Cập nhật thông tin profile mặc định cho người dùng mới
+          await updateProfile(userCredential.user, {
+            displayName: "Member Chill",
+            photoURL: "https://avatarngau.sbs/wp-content/uploads/2025/05/avatar-tho-bay-mau-11.jpg"
+          });
+
+          await sendEmailVerification(userCredential.user);
+          await signOut(window.auth); // Buộc người dùng phải xác minh mới được đăng nhập
+          alert("Đăng ký thành công! Vui lòng kiểm tra hộp thư Email để kích hoạt tài khoản.");
+          closeLoginModal();
+        } else {
+          // Xử lý Đăng nhập
+          const userCredential = await signInWithEmailAndPassword(window.auth, emailInput, passInput);
+          
+          // Kiểm tra xem email đã được xác minh chưa
+          if (!userCredential.user.emailVerified) {
+            await signOut(window.auth);
+            alert("Vui lòng kích hoạt tài khoản qua đường link đã gửi vào Email của bạn trước khi đăng nhập!");
+            return;
+          }
+          
+          closeLoginModal(); // Đóng modal, onAuthStateChanged sẽ tự lo phần UI
+        }
+      } catch (error) {
+        console.error("Lỗi xác thực Email:", error);
+        let msg = "Đã xảy ra lỗi không xác định!";
+        switch(error.code) {
+          case 'auth/email-already-in-use': 
+            msg = "Email này đã được sử dụng cho một tài khoản khác!"; break;
+          case 'auth/wrong-password': 
+            msg = "Mật khẩu không chính xác!"; break;
+          case 'auth/user-not-found': 
+            msg = "Tài khoản không tồn tại, bạn có muốn đăng ký không?"; break;
+          case 'auth/weak-password': 
+            msg = "Mật khẩu quá yếu! Vui lòng nhập ít nhất 6 ký tự."; break;
+          case 'auth/invalid-credential':
+            msg = "Thông tin đăng nhập không hợp lệ (sai email hoặc mật khẩu)!"; break;
+          case 'auth/invalid-email':
+            msg = "Định dạng email không hợp lệ!"; break;
+          default: 
+            msg = "Lỗi: " + error.message;
+        }
+        alert(msg);
+      }
     });
   }
 });
@@ -1693,7 +1792,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (user) {
             if(authWarning) authWarning.style.display = 'none';
             if(inputForm) inputForm.style.display = 'flex';
-            if(avatarImg) avatarImg.src = user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || 'User') + '&background=random';
+            if(avatarImg) avatarImg.src = user.photoURL || './ig/avatar-tho-bay-mau-11.jpg';
           } else {
             if(authWarning) authWarning.style.display = 'block';
             if(inputForm) inputForm.style.display = 'none';
