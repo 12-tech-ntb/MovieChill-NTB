@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <link rel="preload" href="./ig/offline-cat.gif" as="image">
     <link rel="stylesheet" href="style.css" />
      <link
       rel="apple-touch-icon"
@@ -83,9 +84,12 @@
   <body>
     <!-- Offline Modal -->
     <div id="offline-modal">
-      <img src="https://cdn.dribbble.com/users/2469324/screenshots/6538803/comp_3.gif" alt="Offline">
-      <h2>Ối! Mất kết nối mạng rồi</h2>
-      <p>Vui lòng kiểm tra lại WiFi hoặc 4G để tiếp tục xem phim nhé!</p>
+      <div class="modal-content">
+        <img src="./ig/offline-cat.gif" alt="Offline">
+        <h2>Ối! Mất kết nối mạng rồi</h2>
+        <p>Vui lòng kiểm tra lại WiFi hoặc 4G để tiếp tục xem phim nhé!</p>
+        <button class="retry-btn" onclick="location.reload()">Thử lại</button>
+      </div>
     </div>
     <header>
       <!-- <div class="background">
