@@ -466,8 +466,15 @@ const googleProvider = new GoogleAuthProvider();
 
     } catch (error) {
       console.error('Lỗi khi tải phim trang chủ:', error);
-      if(list1) list1.innerHTML = '<p style="color:white; padding: 20px;">Lỗi tải dữ liệu.</p>';
-      if(list2) list2.innerHTML = '<p style="color:white; padding: 20px;">Lỗi tải dữ liệu.</p>';
+      const errorHtml = `
+        <div style="text-align: center; padding: 40px 20px; width: 100%;">
+          <i class="fa-solid fa-server" style="font-size: 40px; color: #ef4444; margin-bottom: 15px;"></i>
+          <h3 style="color: #fff; margin-bottom: 10px; font-family: 'Inter', sans-serif;">Máy chủ đang bận đi cà phê!</h3>
+          <p style="color: #ccc; font-size: 15px; font-family: 'Inter', sans-serif;">Hệ thống cung cấp phim đang được bảo trì hoặc quá tải. Vui lòng quay lại sau ít phút nhé.</p>
+        </div>
+      `;
+      if(list1) list1.innerHTML = errorHtml;
+      if(list2) list2.innerHTML = errorHtml;
     }
   }
 
@@ -1079,7 +1086,13 @@ const googleProvider = new GoogleAuthProvider();
       renderTop10Movies(movies, container, domainImage);
     } catch(error) {
       console.error("Lỗi tải Top 10:", error);
-      container.innerHTML = '<p style="color:white; padding-left: 40px;">Lỗi tải dữ liệu Top 10.</p>';
+      container.innerHTML = `
+        <div style="text-align: center; padding: 40px 20px; width: 100%;">
+          <i class="fa-solid fa-server" style="font-size: 40px; color: #ef4444; margin-bottom: 15px;"></i>
+          <h3 style="color: #fff; margin-bottom: 10px; font-family: 'Inter', sans-serif;">Máy chủ đang bận đi cà phê!</h3>
+          <p style="color: #ccc; font-size: 15px; font-family: 'Inter', sans-serif;">Hệ thống cung cấp phim đang được bảo trì hoặc quá tải. Vui lòng quay lại sau ít phút nhé.</p>
+        </div>
+      `;
     }
   }
 
@@ -2050,4 +2063,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+});
+
+
+// Xử lý sự kiện mất kết nối Internet (Offline Mode)
+const offlineModal = document.getElementById('offline-modal');
+
+window.addEventListener('offline', () => {
+  if (offlineModal) {
+    offlineModal.style.display = 'flex';
+  }
+});
+
+window.addEventListener('online', () => {
+  if (offlineModal) {
+    offlineModal.style.display = 'none';
+  }
 });
