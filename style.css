@@ -3771,6 +3771,14 @@ body.light-mode .info-body h4 { color: #0f172a; }
   }
 }
 
+/* Di chuyển khối "Đang xem" lên góc trên cùng bên trái khi hover vào card */
+.movie-card:hover .continue-badge {
+  top: 10px !important;
+  left: 10px !important;
+  right: auto !important;
+  z-index: 99;
+}
+
 
 /* Offline Modal - Glassmorphism Redesign */
 #offline-modal {
@@ -3843,4 +3851,42 @@ body.light-mode .info-body h4 { color: #0f172a; }
   background: #d97706;
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
-}
+}
+
+/* Hiển thị vĩnh viễn nút xóa phim trong Thư Viện trên Mobile (không cần hover) */
+@media (max-width: 768px) {
+  .delete-movie-btn {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+    display: flex !important;
+    position: absolute !important;
+    bottom: 10px !important;
+    right: 10px !important;
+    z-index: 99 !important;
+  }
+
+  /* Tối ưu cuộn ngang cho danh sách thumbnail phim nổi bật Hàn Quốc */
+  .hero-thumbnails {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .hero-thumbnails::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .hero-thumbnails .thumb-item {
+    flex-shrink: 0 !important;
+  }
+  
+  .hero-thumbnails .thumb-item:hover {
+    transform: none !important;
+  }
+}
+
+
