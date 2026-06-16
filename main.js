@@ -12,7 +12,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
-  updateProfile
+  updateProfile,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
   getFirestore, doc, setDoc, deleteDoc, getDoc, collection, query, orderBy, getDocs, serverTimestamp, onSnapshot, addDoc 
@@ -1348,6 +1349,46 @@ document.addEventListener('DOMContentLoaded', () => {
     btnGotoRegisterSub.addEventListener('click', (e) => {
       e.preventDefault();
       toggleAuthMode();
+    });
+  }
+
+  // Xử lý Quên mật khẩu
+  const btnGotoForgot = document.getElementById('btn-goto-forgot');
+  if (btnGotoForgot) {
+    btnGotoForgot.addEventListener('click', async (e) => {
+      e.preventDefault();
+      
+      let email = document.getElementById('login-username')?.value.trim();
+      
+      if (!email) {
+        email = prompt("Vui lòng nhập Email của bạn để khôi phục mật khẩu:");
+        if (email) {
+          email = email.trim();
+        }
+      }
+      
+      if (!email) {
+        return; // Người dùng hủy hoặc không nhập
+      }
+      
+      try {
+        await sendPasswordResetEmail(window.auth, email);
+        alert('Link đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư email (kể cả mục Spam).');
+      } catch (error) {
+        console.error("Lỗi gửi email reset password:", error);
+        let msg = "Gửi yêu cầu thất bại!";
+        switch (error.code) {
+          case 'auth/user-not-found':
+            msg = "Tài khoản chưa được đăng ký!";
+            break;
+          case 'auth/invalid-email':
+            msg = "Định dạng email không hợp lệ!";
+            break;
+          default:
+            msg = "Lỗi: " + error.message;
+        }
+        alert(msg);
+      }
     });
   }
 
