@@ -91,6 +91,9 @@
         <button class="retry-btn" onclick="location.reload()">Thử lại</button>
       </div>
     </div>
+    <!-- =========================
+         HEADER SECTION
+         ========================= -->
     <header>
       <!-- <div class="background">
         <img src="./ig/a1.jpg" alt="bg" /> -->
@@ -235,6 +238,9 @@
           </div>
         </div>
     </header>
+    <!-- =========================
+         MAIN CONTENT SECTION
+         ========================= -->
     <main>
       <div class="domain-link">
         <span><p>Admin<i class="fa-brands fa-instagram"></i><a class="text-ig" target="_blank"  href="https://l.facebook.com/l.php?u=https%3A%2F%2Fwww.instagram.com%2Fbacnguyentat12206%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExOFVueFQzOU1tTk02azhnVHNydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR73-4ZFE5Ezhx4_oUEDisKXjRfTL6-5DIoAnZflloCOZHYdjYutKTk5PQxmPQ_aem_cuIfShMlRepcHi0ZOWDxWg&h=AT5xoqeSO7HkqgSLO6u8fKemftQQDSGbOirAsscYlSONxOyDtPxayc0vVNBuBicz5XK9xg4L5uwZkzzV799-p4-_DPc5Sei9ZdCUyLUSPZ75JBq-wBQzyZfCaCscIkhEWTEV9BAeP4MCl82DFdVo">Instagram</a></p></span>
@@ -502,6 +508,9 @@
         </div>
       </div>
     </main>
+    <!-- =========================
+         FOOTER SECTION
+         ========================= -->
     <footer class="footer">
       <div class="footer-container">
         <div class="footer-col brand-col">
@@ -544,6 +553,9 @@
       </div>
     </footer>
       <script type="module" src="main.js"></script>
+    <!-- =========================
+         MODALS SECTION
+         ========================= -->
     <!-- Theme Login -->
      <div id="login-modal" class="login-modal">
   <div class="login-modal-content">
@@ -564,8 +576,19 @@
               <input type="text" id="login-username" placeholder="Email" required>
             </div>
             <div class="input-group">
-              <input type="password" id="login-pw" placeholder="Mật khẩu" required>
+              <div class="password-wrapper">
+                <input type="password" id="login-pw" placeholder="Mật khẩu" required>
+                <i class="fa-regular fa-eye" id="togglePassword"></i>
+              </div>
             </div>
+            
+            <div class="input-group" id="confirmPasswordGroup" style="display: none;">
+              <div class="password-wrapper">
+                <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu">
+                <i class="fa-regular fa-eye" id="toggleConfirmPassword"></i>
+              </div>
+            </div>
+            <span class="error-msg" id="passwordError" style="display: none; color: #ef4444; font-size: 13px; margin-top: -10px; margin-bottom: 15px; display: block;">Mật khẩu không khớp!</span>
             
             <div class="form-options">
               <label class="remember-me">

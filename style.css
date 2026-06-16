@@ -4,6 +4,18 @@
   box-sizing: border-box;
 }
 
+:root {
+  --primary-color: #f59e0b;
+  --primary-hover: #fbbf24;
+  --primary-light: #fcd34d;
+  --bg-dark: #141414;
+  --bg-navy: #1a1d2e;
+  --text-light: #ffffff;
+  --text-muted: #a0a0a0;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --error-color: #ef4444;
+}
+
 html, body {
   overflow-x: hidden;
   width: 100%;
@@ -2795,14 +2807,14 @@ body.light-mode .suggest-meta {
 }
 
 .login-modal-content {
-  background-color: #1a1d2e; /* Màu nền Navy đậm như RoPhim */
+  background-color: var(--bg-dark);
   margin: 5% auto;
   width: 80%;
   max-width: 850px;
   border-radius: 16px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
 }
@@ -2835,14 +2847,15 @@ body.light-mode .suggest-meta {
 .login-column-left {
   flex: 0 0 45%; 
   position: relative;
-  /* Lớp nền ảnh phim lót phía sau */
-  background: linear-gradient(rgba(26, 29, 46, 0.5), rgba(26, 29, 46, 0.8)), url('./ig/loginbg.png');
+  /* Lớp nền ảnh phim lót phía sau kèm Gradient đen mờ từ dưới lên */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%), url('./ig/loginbg.png');
   background-size: cover;
   background-position: center;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
 }
 
 .login-brand-img {
@@ -2858,9 +2871,9 @@ body.light-mode .suggest-meta {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 50px 40px;
-  background-color: #1a1d2e;
-  color: #fff;
+  padding: 50px;
+  background-color: var(--bg-dark);
+  color: var(--text-light);
 }
 
 .login-form-container {
@@ -2885,13 +2898,14 @@ body.light-mode .suggest-meta {
 }
 
 .login-subtitle a {
-  color: #fcd34d;
+  color: #a0a0a0;
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .login-subtitle a:hover {
-  text-decoration: underline;
+  color: #f59e0b;
 }
 
 .input-group {
@@ -2901,7 +2915,7 @@ body.light-mode .suggest-meta {
 .input-group input {
   width: 100%;
   padding: 14px 18px;
-  background-color: rgba(255, 255, 255, 0.03); 
+  background: rgba(255, 255, 255, 0.05); 
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   color: #fff;
@@ -2910,9 +2924,10 @@ body.light-mode .suggest-meta {
 }
 
 .input-group input:focus {
-  border-color: #fcd34d;
+  border-color: var(--primary-color);
   outline: none;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 2px rgba(255, 183, 3, 0.3);
 }
 
 .form-options {
@@ -2933,12 +2948,12 @@ body.light-mode .suggest-meta {
 .login-submit-btn {
   width: 100%;
   padding: 14px;
-  background-color: #fcd34d; /* Màu vàng RoPhim */
+  background: linear-gradient(90deg, #f6d365 0%, #fda085 100%);
   border: none;
   border-radius: 8px;
-  color: #1a1d2e; /* Chữ tối trên nền vàng */
+  color: #1a1a1a;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   text-transform: none;
   transition: all 0.3s ease;
@@ -2947,9 +2962,8 @@ body.light-mode .suggest-meta {
 }
 
 .login-submit-btn:hover {
-  background-color: #fbbf24;
-  transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(252, 211, 77, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(246, 211, 101, 0.4);
 }
 
 .form-links {
@@ -2959,13 +2973,13 @@ body.light-mode .suggest-meta {
 
 .forgot-pw-link {
   font-size: 13px;
-  color: #aaa;
+  color: #a0a0a0;
   text-decoration: none;
-  transition: var(--transition);
+  transition: color 0.3s ease;
 }
 
 .forgot-pw-link:hover {
-  color: var(--primary-color);
+  color: #f59e0b;
 }
 
 .social-divider {
@@ -3004,7 +3018,7 @@ body.light-mode .suggest-meta {
   flex: 1;
   padding: 10px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   color: white;
   font-size: 14px;
   font-weight: 500;
@@ -3013,7 +3027,11 @@ body.light-mode .suggest-meta {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  transition: var(--transition);
+  transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
 }
 
 .facebook-btn {
@@ -3022,6 +3040,7 @@ body.light-mode .suggest-meta {
 
 .facebook-btn:hover {
   background-color: #2d4373;
+  box-shadow: 0 5px 15px rgba(59, 89, 152, 0.4);
 }
 
 .google-btn {
@@ -3030,6 +3049,7 @@ body.light-mode .suggest-meta {
 
 .google-btn:hover {
   background-color: #c0392b;
+  box-shadow: 0 5px 15px rgba(223, 74, 50, 0.4);
 }
 
 .register-callout {
@@ -3043,14 +3063,16 @@ body.light-mode .suggest-meta {
 }
 
 .register-now-link {
-  color: var(--primary-color);
+  color: #a0a0a0;
   font-weight: 700;
   text-decoration: none;
   font-size: 15px;
+  transition: color 0.3s ease;
 }
 
 .register-now-link:hover {
-  text-decoration: underline;
+  color: #f59e0b;
+  text-decoration: none;
 }
 
 /* Responsive */
@@ -3887,6 +3909,36 @@ body.light-mode .info-body h4 { color: #0f172a; }
   .hero-thumbnails .thumb-item:hover {
     transform: none !important;
   }
+}
+
+/* ============================================================
+   PASSWORD TOGGLE (LOGIN/REGISTER)
+   ============================================================ */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+  width: 100%;
+  padding-right: 40px;
+}
+
+#togglePassword,
+#toggleConfirmPassword {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #a0a0a0;
+  transition: color 0.3s ease;
+}
+
+#togglePassword:hover,
+#toggleConfirmPassword:hover {
+  color: #fff;
 }
 
 

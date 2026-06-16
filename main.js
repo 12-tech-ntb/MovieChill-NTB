@@ -51,6 +51,69 @@ const googleProvider = new GoogleAuthProvider();
   if(heroTitle) heroTitle.style.transition = 'opacity 0.3s ease';
   if(heroDesc) heroDesc.style.transition = 'opacity 0.3s ease';
 
+  // --- 1.1 API & STATE MANAGEMENT (MODULARIZATION) ---
+  const ApiService = {
+    async get(url) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        console.error(`[ApiService] Failed to fetch data from ${url}:`, error);
+        throw error;
+      }
+    }
+  };
+
+  const AppState = {
+    heroMoviesData: [],
+    currentHeroSlug: '',
+    
+    setHeroMovies(data) {
+      this.heroMoviesData = data;
+    },
+    setCurrentHeroSlug(slug) {
+      this.currentHeroSlug = slug;
+    }
+  };
+
+  // --- 1.2 DỮ LIỆU PHIM HERO (Dùng cho slider) ---
+  // Hàm xử lý dữ liệu API thô thành dạng chuẩn cho Hero Banner
+  function formatHeroMovieData(movieInfo, top5Movie, index, domainImg) {
+    let cleanDesc = movieInfo.content || movieInfo.origin_name || '';
+    let tempDiv = document.createElement("div");
+    tempDiv.innerHTML = cleanDesc;
+    cleanDesc = tempDiv.textContent || tempDiv.innerText || "";
+    if (cleanDesc.length > 200) cleanDesc = cleanDesc.substring(0, 200) + '...';
+
+    return {
+      img: domainImg + (movieInfo.poster_url || movieInfo.thumb_url || top5Movie.poster_url),
+      thumb: domainImg + (movieInfo.thumb_url || top5Movie.thumb_url),
+      title: movieInfo.name,
+      sub: movieInfo.origin_name || 'MovieChill',
+      rating: 'Mới',
+      years: movieInfo.year || '2026',
+      quality: movieInfo.quality || 'HD',
+      episode: movieInfo.episode_current || 'Full',
+      types: movieInfo.category ? movieInfo.category.slice(0, 3).map(c => c.name || c.title) : ['Hot'],
+      desc: cleanDesc,
+      slug: movieInfo.slug
+    };
+  }
+
+  // Hàm render giao diện Thumbnail
+  function renderHeroThumbnails(movies) {
+    if (!thumbsContainer) return;
+    thumbsContainer.innerHTML = '';
+    movies.forEach((movie, index) => {
+      const div = document.createElement('div');
+      div.className = 'thumb-item' + (index === 0 ? ' active' : '');
+      div.innerHTML = `<img src="${movie.thumb}" alt="${movie.title}">`;
+      div.addEventListener('click', () => window.handleThumbClick(index));
+      thumbsContainer.appendChild(div);
+    });
+  }
+
   // Hàm click đổi phim trên Hero Banner
   window.handleThumbClick = function(index) {
     if (!thumbsContainer) return;
@@ -58,15 +121,15 @@ const googleProvider = new GoogleAuthProvider();
     const allThumbs = thumbsContainer.querySelectorAll('.thumb-item');
     if (allThumbs[index]) allThumbs[index].classList.add('active');
 
-    const data = heroMoviesData[index];
+    const data = AppState.heroMoviesData[index];
     if (!data) return;
     
-    currentHeroSlug = data.slug;
+    AppState.setCurrentHeroSlug(data.slug);
     
     if(window.innerWidth > 768) {
        header.style.backgroundImage = `linear-gradient(to right, rgba(0, 0, 0, 0.9) 10%, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0) 100%), url('${data.img}')`;
     } else {
-       header.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.6) 60%, #242424 85%, #242424 100%), url('${data.img}')`;
+       header.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.6) 60%, var(--bg-dark, #141414) 85%, var(--bg-dark, #141414) 100%), url('${data.img}')`;
     }
 
     if(heroTitle) heroTitle.style.opacity = 0;
@@ -93,61 +156,31 @@ const googleProvider = new GoogleAuthProvider();
     }, 300);
   }
 
-  // Lấy dữ liệu 5 phim mới từ API
+  // Controller chính lấy dữ liệu 5 phim mới
   async function fetchHeroMovies() {
     try {
-      const res = await fetch('https://ophim1.com/v1/api/quoc-gia/han-quoc?page=1');
-      const data = await res.json();
+      const data = await ApiService.get('https://ophim1.com/v1/api/quoc-gia/han-quoc?page=1');
       const top5 = data.data.items.slice(0, 5);
       const domainImg = data.data.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/';
 
       // Fetch song song chi tiết 5 phim
-      const detailPromises = top5.map(m => fetch('https://ophim1.com/v1/api/phim/' + m.slug).then(r => r.json()));
+      const detailPromises = top5.map(m => ApiService.get('https://ophim1.com/v1/api/phim/' + m.slug));
       const details = await Promise.all(detailPromises);
 
-      heroMoviesData = details.map((detailRes, index) => {
+      const formattedData = details.map((detailRes, index) => {
          const movieInfo = detailRes.data ? (detailRes.data.item || detailRes.data.movie) : top5[index];
-         
-         let cleanDesc = movieInfo.content || movieInfo.origin_name || '';
-         // Bỏ HTML tags
-         let tempDiv = document.createElement("div");
-         tempDiv.innerHTML = cleanDesc;
-         cleanDesc = tempDiv.textContent || tempDiv.innerText || "";
-         if (cleanDesc.length > 200) cleanDesc = cleanDesc.substring(0, 200) + '...';
-
-         return {
-           img: domainImg + (movieInfo.poster_url || movieInfo.thumb_url || top5[index].poster_url),
-           thumb: domainImg + (movieInfo.thumb_url || top5[index].thumb_url),
-           title: movieInfo.name,
-           sub: movieInfo.origin_name || 'MovieChill',
-           rating: 'Mới',
-           years: movieInfo.year || '2026',
-           quality: movieInfo.quality || 'HD',
-           episode: movieInfo.episode_current || 'Full',
-           types: movieInfo.category ? movieInfo.category.slice(0, 3).map(c => c.name || c.title) : ['Hot'],
-           desc: cleanDesc,
-           slug: movieInfo.slug
-         };
+         return formatHeroMovieData(movieInfo, top5[index], index, domainImg);
       });
 
-      // Vẽ các thumbnail
-      if (thumbsContainer) {
-        thumbsContainer.innerHTML = '';
-        heroMoviesData.forEach((movie, index) => {
-          const div = document.createElement('div');
-          div.className = 'thumb-item' + (index === 0 ? ' active' : '');
-          div.innerHTML = `<img src="${movie.thumb}" alt="${movie.title}">`;
-          div.addEventListener('click', () => window.handleThumbClick(index));
-          thumbsContainer.appendChild(div);
-        });
-      }
+      AppState.setHeroMovies(formattedData);
+      renderHeroThumbnails(formattedData);
 
       // Kích hoạt banner đầu tiên
-      if (heroMoviesData.length > 0) {
+      if (formattedData.length > 0) {
         window.handleThumbClick(0);
       }
     } catch (error) {
-      console.error("Lỗi khi load Hero Banner:", error);
+      console.error("[HeroBanner] Lỗi khi load banner:", error);
     }
   }
 
@@ -423,8 +456,7 @@ const googleProvider = new GoogleAuthProvider();
   // Fetch Trang Chủ
   async function fetchHomeMovies() {
     try {
-      const response = await fetch(API_HOME);
-      const data = await response.json();
+      const data = await ApiService.get(API_HOME);
       const responseData = data.data || data; // Hỗ trợ nhiều cấu trúc trả về
       const domainImage = responseData.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/';
       
@@ -441,19 +473,17 @@ const googleProvider = new GoogleAuthProvider();
 
       // Fetch Yêu Thích Nhất (Chiếu Rạp) & Hoạt Hình Hot
       try {
-        const [favRes, animeRes] = await Promise.all([
-          fetch('https://ophim1.com/v1/api/danh-sach/phim-chieu-rap'),
-          fetch('https://ophim1.com/v1/api/danh-sach/hoat-hinh')
+        const [favData, animeData] = await Promise.all([
+          ApiService.get('https://ophim1.com/v1/api/danh-sach/phim-chieu-rap'),
+          ApiService.get('https://ophim1.com/v1/api/danh-sach/hoat-hinh')
         ]);
         
-        const favData = await favRes.json();
         const favResponseData = favData.data || favData;
         const favDomainImage = favResponseData.APP_DOMAIN_CDN_IMAGE ? favResponseData.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/' : 'https://img.ophim.live/uploads/movies/';
         const favMovies = favResponseData.items || [];
         const rankFavorite = document.getElementById('rank-favorite');
         if(rankFavorite) renderRankingList(favMovies.slice(0, 5), rankFavorite, favDomainImage, 'favorite');
 
-        const animeData = await animeRes.json();
         const animeResponseData = animeData.data || animeData;
         const animeDomainImage = animeResponseData.APP_DOMAIN_CDN_IMAGE ? animeResponseData.APP_DOMAIN_CDN_IMAGE + '/uploads/movies/' : 'https://img.ophim.live/uploads/movies/';
         const animeMovies = animeResponseData.items || [];
@@ -575,8 +605,8 @@ const googleProvider = new GoogleAuthProvider();
 
     try {
       // Gọi cả 2 API cùng lúc để tiết kiệm thời gian
-      const pOphim = fetch(API_CONFIG.OPHIM.DETAIL_URL + slug).then(r => r.json()).catch(e => ({ error: true }));
-      const pKkphim = fetch(API_CONFIG.KKPHIM.DETAIL_URL + slug).then(r => r.json()).catch(e => ({ error: true }));
+      const pOphim = ApiService.get(API_CONFIG.OPHIM.DETAIL_URL + slug).catch(e => ({ error: true }));
+      const pKkphim = ApiService.get(API_CONFIG.KKPHIM.DETAIL_URL + slug).catch(e => ({ error: true }));
 
       const [resOphim, resKkphim] = await Promise.all([pOphim, pKkphim]);
 
@@ -1287,16 +1317,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // Hàm chuyển đổi giao diện giữa Đăng nhập và Đăng ký
   function toggleAuthMode() {
     isRegisterMode = !isRegisterMode;
+    const confirmGroup = document.getElementById('confirmPasswordGroup');
+    const passwordError = document.getElementById('passwordError');
+    if (passwordError) passwordError.style.display = 'none';
+
     if (isRegisterMode) {
       if(loginTitle) loginTitle.textContent = 'Đăng ký';
       if(loginSubmitBtn) loginSubmitBtn.textContent = 'Đăng ký';
       if(btnGotoRegister) btnGotoRegister.textContent = 'ĐĂNG NHẬP NGAY';
       if(btnGotoRegisterSub) btnGotoRegisterSub.textContent = 'đăng nhập ngay';
+      if(confirmGroup) confirmGroup.style.display = 'block';
     } else {
       if(loginTitle) loginTitle.textContent = 'Đăng nhập';
       if(loginSubmitBtn) loginSubmitBtn.textContent = 'Đăng nhập';
       if(btnGotoRegister) btnGotoRegister.textContent = 'ĐĂNG KÝ NGAY';
       if(btnGotoRegisterSub) btnGotoRegisterSub.textContent = 'đăng ký ngay';
+      if(confirmGroup) confirmGroup.style.display = 'none';
     }
   }
 
@@ -1322,10 +1358,21 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const emailInput = document.getElementById('login-username').value;
       const passInput = document.getElementById('login-pw').value;
+      const confirmInput = document.getElementById('confirmPassword').value;
+      const passwordError = document.getElementById('passwordError');
       
       if (!emailInput || !passInput) {
         alert("Vui lòng nhập Email và Mật khẩu!");
         return;
+      }
+
+      if (isRegisterMode) {
+        if (passInput !== confirmInput) {
+          if (passwordError) passwordError.style.display = 'block';
+          return;
+        } else {
+          if (passwordError) passwordError.style.display = 'none';
+        }
       }
       
       try {
@@ -2080,5 +2127,32 @@ window.addEventListener('offline', () => {
 window.addEventListener('online', () => {
   if (offlineModal) {
     offlineModal.style.display = 'none';
+  }
+});
+
+// Xử lý sự kiện Ẩn/Hiện mật khẩu
+document.addEventListener('DOMContentLoaded', () => {
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('login-pw');
+
+  if (togglePassword && passwordInput) {
+    togglePassword.addEventListener('click', function () {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      this.classList.toggle('fa-eye');
+      this.classList.toggle('fa-eye-slash');
+    });
+  }
+
+  const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+
+  if (toggleConfirmPassword && confirmPasswordInput) {
+    toggleConfirmPassword.addEventListener('click', function () {
+      const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      confirmPasswordInput.setAttribute('type', type);
+      this.classList.toggle('fa-eye');
+      this.classList.toggle('fa-eye-slash');
+    });
   }
 });
