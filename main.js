@@ -192,8 +192,8 @@ const googleProvider = new GoogleAuthProvider();
   if(heroPlayBtn) {
     heroPlayBtn.style.cursor = 'pointer';
     heroPlayBtn.addEventListener('click', () => {
-      if(window.playMovie && currentHeroSlug) {
-        window.playMovie(currentHeroSlug);
+      if(window.playMovie && AppState.currentHeroSlug) {
+        window.playMovie(AppState.currentHeroSlug);
       }
     });
   }
