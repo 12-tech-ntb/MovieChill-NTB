@@ -82,6 +82,7 @@
     <title>MovieChill</title>
   </head>
   <body>
+
     <!-- Offline Modal -->
     <div id="offline-modal">
       <div class="modal-content">
@@ -159,6 +160,10 @@
                     <button id="btn-login-header" class="action-btn"><i class="fa-regular fa-user"></i> Đăng Nhập</button>
                     <button id="theme-toggle" class="theme-toggle-btn" title="Chuyển giao diện">
                       <span class="theme-icon">🌙</span>
+                    </button>
+                    <button id="btn-notification" class="action-btn notification-btn" title="Thông báo">
+                      <i class="fa-solid fa-bell"></i>
+                      <span class="notification-badge" id="notification-badge" style="display: none;">1</span>
                     </button>
                   </div>
                 </li>
@@ -552,6 +557,29 @@
         <p>Copyright &copy; 2026 NTB MovieChill. All rights reserved.</p>
       </div>
     </footer>
+    
+    <!-- Modal Admin (Soạn thông báo) -->
+    <div id="notice-modal-admin" class="notice-modal">
+      <div class="notice-modal-content admin-modal-style">
+        <h4><i class="fa-solid fa-tower-broadcast"></i> Gửi thông báo</h4>
+        <textarea id="input-notice-text" placeholder="Nhập nội dung thông báo gửi đến tất cả người dùng..."></textarea>
+        <div class="notice-modal-btns">
+          <button id="btn-turn-on-notice" class="btn-on">Gửi</button>
+          <button id="btn-turn-off-notice" class="btn-off">Tắt thông báo</button>
+        </div>
+        <button class="close-notice-modal" id="close-admin-modal">&times;</button>
+      </div>
+    </div>
+
+    <!-- Modal User (Xem thông báo) -->
+    <div id="notice-modal-user" class="notice-modal">
+      <div class="notice-modal-content user-modal-style">
+        <h4><i class="fa-solid fa-bell"></i> Thông báo từ Admin</h4>
+        <div class="notice-user-text" id="notice-user-text-content">Đang tải thông báo...</div>
+        <button id="btn-user-understand" class="btn-understand">Đã hiểu / Đóng</button>
+      </div>
+    </div>
+
       <script type="module" src="main.js"></script>
     <!-- =========================
          MODALS SECTION

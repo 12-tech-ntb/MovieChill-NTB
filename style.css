@@ -134,6 +134,7 @@ html, body {
     z-index: 2200 !important;
   }
 
+
   /* Cố định nút 3 gạch khi mở menu */
   .hamburger.toggle {
     position: fixed !important;
@@ -194,6 +195,41 @@ html, body {
     font-weight: 600 !important;
     font-size: 14px !important;
     color: #fff !important;
+  }
+
+  /* Ghi đè riêng cho nút chuông trên mobile để nó giống nút Đổi giao diện và luôn nằm dưới cùng */
+  .actions .notification-btn {
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    height: 46px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #fff !important;
+    font-size: 15px !important;
+    box-shadow: none !important;
+    order: 10 !important; /* Ép nút xuống dưới cùng của danh sách */
+  }
+
+  .actions .notification-btn::after {
+    content: "Thông báo" !important;
+    margin-left: 8px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    color: #fff !important;
+  }
+
+  .actions .notification-badge {
+    top: 5px !important;
+    right: 15px !important;
   }
 
   .nav-actions-container {
@@ -698,6 +734,10 @@ nav {
 
 .nav-link li:hover .menu1 {
   display: grid; /* Dùng grid thay vì flex để chia cột chuẩn nhất */
+}
+
+.nav-actions-container {
+  position: static !important;
 }
 
 .actions {
@@ -3939,6 +3979,297 @@ body.light-mode .info-body h4 { color: #0f172a; }
 #togglePassword:hover,
 #toggleConfirmPassword:hover {
   color: #fff;
+}
+
+/* =========================================
+   GLOBAL NOTIFICATION SYSTEM (MODALS)
+   ========================================= */
+
+/* =========================================
+   GLOBAL NOTIFICATION SYSTEM (MODALS)
+   ========================================= */
+
+/* Notification Bell */
+.notification-btn {
+  position: absolute !important;
+  right: 30px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+.notification-btn i {
+  color: #fff;
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.notification-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 0 15px var(--primary-color, #efb003) !important;
+}
+
+/* Ringing animation on hover */
+@keyframes ringing {
+  0% { transform: rotate(0); }
+  15% { transform: rotate(15deg); }
+  30% { transform: rotate(-15deg); }
+  45% { transform: rotate(10deg); }
+  60% { transform: rotate(-10deg); }
+  75% { transform: rotate(5deg); }
+  90% { transform: rotate(-5deg); }
+  100% { transform: rotate(0); }
+}
+
+.notification-btn:hover i {
+  animation: ringing 0.6s ease-in-out;
+}
+
+.notification-badge {
+  position: absolute !important;
+  top: -2px !important;
+  right: -2px !important;
+  background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%) !important;
+  color: #fff !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  border: 2px solid #0a0a0f !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  box-shadow: 0 0 8px rgba(255, 8, 68, 0.6) !important;
+  animation: pulse-badge 1.8s infinite !important;
+  z-index: 10;
+}
+
+@keyframes pulse-badge {
+  0% { box-shadow: 0 0 0 0 rgba(255, 8, 68, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(255, 8, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 8, 68, 0); }
+}
+
+/* Modals General Style */
+.notice-modal {
+  display: none; 
+  position: fixed; 
+  z-index: 99999; 
+  left: 0; 
+  top: 0; 
+  width: 100%; 
+  height: 100%; 
+  background-color: rgba(10, 10, 15, 0.7); 
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.notice-modal.active {
+  display: flex;
+  opacity: 1;
+}
+
+.notice-modal-content {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  position: relative;
+  transform: scale(0.9);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+}
+
+.notice-modal.active .notice-modal-content {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.notice-modal-content h4 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.close-notice-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-notice-modal:hover {
+  color: #ef4444;
+}
+
+/* Admin Modal Specific */
+.admin-modal-style h4 {
+  background: linear-gradient(135deg, #ff0f7b 0%, #f89b29 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.admin-modal-style h4 i {
+  background: linear-gradient(135deg, #ff0f7b 0%, #f89b29 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(255, 15, 123, 0.6));
+}
+
+#input-notice-text {
+  width: 100%;
+  height: 100px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  resize: none;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+#input-notice-text:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+}
+
+.notice-modal-btns {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.notice-modal-btns button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-on {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  color: #000;
+}
+
+.btn-on:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(246, 211, 101, 0.5);
+}
+
+.btn-off {
+  background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
+  color: #fff;
+}
+
+.btn-off:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 8, 68, 0.4);
+}
+
+/* User Modal Specific (Futuristic Glassmorphism) */
+.user-modal-style {
+  background: linear-gradient(rgba(15, 15, 20, 0.85), rgba(15, 15, 20, 0.85)) padding-box,
+              linear-gradient(135deg, rgba(239, 176, 3, 0.3), rgba(239, 68, 68, 0.1)) border-box !important;
+  border: 1px solid transparent !important;
+  border-radius: 20px;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 0, 0, 0.8) !important;
+}
+
+.user-modal-style h4 {
+  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.user-modal-style h4 i {
+  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(0, 198, 255, 0.6));
+}
+
+.notice-user-text {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 24px !important;
+  border-radius: 12px !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: #f3f4f6 !important;
+  margin-bottom: 25px !important;
+  text-align: left !important;
+  letter-spacing: 0.5px;
+}
+
+.btn-understand {
+  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 14px 30px !important;
+  border-radius: 10px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
+}
+
+.btn-understand:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 24px rgba(0, 198, 255, 0.4) !important;
+  text-shadow: 0 0 5px #fff;
+}
+
+.btn-understand:active {
+  transform: translateY(0) !important;
+  box-shadow: none !important;
 }
 
 

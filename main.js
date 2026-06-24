@@ -1233,9 +1233,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Hằng số email của Admin
+  const ADMIN_EMAIL = 'nguyentatbac1222006@gmail.com';
+
   // Theo dõi trạng thái đăng nhập
   onAuthStateChanged(auth, (user) => {
     updateAuthUI(user);
+    
+    // LOGIC PHÂN QUYỀN ADMIN
+    if (user && user.email === ADMIN_EMAIL) {
+      currentUserIsAdmin = true;
+    } else {
+      currentUserIsAdmin = false;
+    }
   });
 
   // Xử lý đăng nhập bằng Google
@@ -2197,3 +2207,130 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// ==========================================
+// TÍNH NĂNG THÔNG BÁO TOÀN HỆ THỐNG (MỚI)
+// ==========================================
+
+let currentUserIsAdmin = false;
+let currentNoticeText = "";
+
+// Bind sự kiện nút Notification trên Navbar
+const btnNotification = document.getElementById('btn-notification');
+const modalAdmin = document.getElementById('notice-modal-admin');
+const modalUser = document.getElementById('notice-modal-user');
+const closeAdminModalBtn = document.getElementById('close-admin-modal');
+const btnUserUnderstand = document.getElementById('btn-user-understand');
+const notificationBadge = document.getElementById('notification-badge');
+const noticeUserTextContent = document.getElementById('notice-user-text-content');
+const btnTurnOnNotice = document.getElementById('btn-turn-on-notice');
+const btnTurnOffNotice = document.getElementById('btn-turn-off-notice');
+const inputNotice = document.getElementById('input-notice-text');
+
+if (btnNotification) {
+  btnNotification.addEventListener('click', () => {
+    // Admin hay User bấm vào chuông đều lưu đã xem và tắt chấm đỏ
+    if (currentNoticeText) {
+      localStorage.setItem('lastReadNotice', currentNoticeText);
+    }
+    if (notificationBadge) notificationBadge.style.display = 'none';
+
+    if (currentUserIsAdmin) {
+      if (modalAdmin) modalAdmin.classList.add('active');
+    } else {
+      if (modalUser) modalUser.classList.add('active');
+    }
+  });
+}
+
+// Đóng Modal Admin
+if (closeAdminModalBtn && modalAdmin) {
+  closeAdminModalBtn.addEventListener('click', () => {
+    modalAdmin.classList.remove('active');
+  });
+}
+
+// Đóng Modal User
+if (btnUserUnderstand && modalUser) {
+  btnUserUnderstand.addEventListener('click', () => {
+    modalUser.classList.remove('active');
+    if (notificationBadge) notificationBadge.style.display = 'none';
+    if (currentNoticeText) {
+      localStorage.setItem('lastReadNotice', currentNoticeText);
+    }
+  });
+}
+
+// Lắng nghe dữ liệu realtime từ Firestore
+onSnapshot(doc(db, 'system', 'config'), (docSnap) => {
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    if (data.noticeActive && data.noticeText) {
+      currentNoticeText = data.noticeText;
+      if (noticeUserTextContent) {
+        noticeUserTextContent.textContent = currentNoticeText;
+      }
+      
+      // Đổ nội dung ngược lại vào ô input của Admin để nhớ
+      if (inputNotice) {
+        inputNotice.value = currentNoticeText;
+      }
+      
+      const lastRead = localStorage.getItem('lastReadNotice');
+      if (lastRead !== currentNoticeText) {
+        // Có thông báo mới chưa đọc
+        if (notificationBadge) notificationBadge.style.display = 'flex';
+        // Tự động mở Modal cho user nếu chưa đọc
+        if (!currentUserIsAdmin && modalUser) {
+           modalUser.classList.add('active'); 
+        }
+      } else {
+        // Đã đọc rồi thì tắt badge
+        if (notificationBadge) notificationBadge.style.display = 'none';
+      }
+    } else {
+      // Đã tắt thông báo
+      currentNoticeText = "";
+      if (notificationBadge) notificationBadge.style.display = 'none';
+      if (noticeUserTextContent) noticeUserTextContent.textContent = "Không có thông báo mới.";
+      if (inputNotice) inputNotice.value = ""; // Xóa trắng ô input khi đã tắt
+    }
+  }
+});
+
+if (btnTurnOnNotice && btnTurnOffNotice && inputNotice) {
+  // Bật thông báo
+  btnTurnOnNotice.addEventListener('click', async () => {
+    const text = inputNotice.value.trim();
+    if (!text) {
+      alert('Vui lòng nhập nội dung thông báo!');
+      return;
+    }
+    try {
+      await setDoc(doc(db, 'system', 'config'), {
+        noticeActive: true,
+        noticeText: text
+      }, { merge: true }); 
+      alert('Đã gửi thông báo thành công!');
+      // Xóa dòng clear input để admin còn thấy mình đã gửi gì
+      if (modalAdmin) modalAdmin.classList.remove('active');
+    } catch (error) {
+      console.error('Lỗi bật thông báo:', error);
+      alert('Không có quyền chỉnh sửa hoặc lỗi mạng!');
+    }
+  });
+
+  // Tắt thông báo
+  btnTurnOffNotice.addEventListener('click', async () => {
+    try {
+      await setDoc(doc(db, 'system', 'config'), {
+        noticeActive: false
+      }, { merge: true });
+      alert('Đã tắt thông báo!');
+      if (modalAdmin) modalAdmin.classList.remove('active');
+    } catch (error) {
+      console.error('Lỗi tắt thông báo:', error);
+      alert('Không có quyền chỉnh sửa hoặc lỗi mạng!');
+    }
+  });
+}
